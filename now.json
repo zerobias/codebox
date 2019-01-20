@@ -16,7 +16,8 @@
     { "src": "*.html", "use": "@now/static" },
     {
       "src": "src/api/index.js",
-      "use": "@now/node"
+      "use": "@now/node",
+      "config": { "maxLambdaSize": "30mb" }
     }
   ],
   "routes": [
