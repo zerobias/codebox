@@ -9,6 +9,6 @@
   },
   "dependencies": {},
   "scripts": {
-    "now-build": "npx parcel build --no-minify --no-source-maps -d ../../dist -o www.html index.html"
+    "now-build": "npx parcel build --no-minify --no-source-maps index.html"
   }
 }

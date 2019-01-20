@@ -10,10 +10,14 @@
   },
   "builds": [
     {
-      "src": "src/www/package.json",
+      "src": [
+        "src/www/package.json",
+        "src/www/index.html",
+        "src/www/dist/index.html"
+      ],
       "use": "@now/static-build"
     },
-    { "src": "src/www/index.html", "use": "@now/static" },
+    { "src": "*.html", "use": "@now/static" },
     {
       "src": "src/api/index.js",
       "use": "@now/node"
@@ -27,6 +31,10 @@
     {
       "src": "/www.html",
       "dest": "/src/www/index.html"
+    },
+    {
+      "src": "/dist.html",
+      "dest": "/src/www/dist/index.html"
     },
     {
       "src": "/api",
