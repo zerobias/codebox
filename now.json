@@ -10,11 +10,11 @@
   },
   "builds": [
     {
-      "src": "src/www/package.json",
+      "src": "www/package.json",
       "use": "@now/static-build"
     },
     {
-      "src": "src/api/index.js",
+      "src": "api/index.js",
       "use": "@now/node",
       "config": { "maxLambdaSize": "30mb" }
     }
@@ -25,7 +25,7 @@
       "methods": [
         "POST"
       ],
-      "dest": "/src/api/index.js"
+      "dest": "/api/index.js"
     },
     {
       "src": "/redirect",
@@ -37,7 +37,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/src/www/$1"
+      "dest": "/www/$1"
     }
   ]
 }
