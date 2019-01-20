@@ -11,7 +11,7 @@
   "builds": [
     {
       "src": "src/www/package.json",
-      "use": "@now/next"
+      "use": "@now/static-build"
     },
     {
       "src": "src/api/index.js",
