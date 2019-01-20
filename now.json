@@ -11,19 +11,16 @@
   "builds": [
     {
       "src": "src/www/package.json",
-      "use": "@now/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+      "use": "@now/static-build"
     },
     {
-      "src": "src/api/prettier.js",
+      "src": "src/api/index.js",
       "use": "@now/node"
     }
   ],
   "routes": [
     {
-      "src": "/index.html",
+      "src": "/wow.html",
       "headers": {
         "cache-control": "s-maxage=1000"
       },
@@ -34,7 +31,7 @@
       "methods": [
         "POST"
       ],
-      "dest": "/dist/prettier.js"
+      "dest": "/src/api/index.js"
     },
     {
       "src": "/users",
@@ -46,10 +43,6 @@
     {
       "src": "/users/(?<id>[^/]*)",
       "dest": "/users-api.js?id=$id"
-    },
-    {
-      "src": "/.*",
-      "dest": "https://zerobias.net"
     },
     {
       "src": "/legacy",
