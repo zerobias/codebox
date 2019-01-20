@@ -16,7 +16,7 @@ export default class ExamplePage extends React.Component {
     return (
       <main>
         <Head>
-          <meta charset="utf-8"/>
+          <meta charSet="utf-8"/>
           <title>API example</title>
           <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
           <link rel="icon" href={icon}/>

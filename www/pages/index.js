@@ -9,7 +9,7 @@ import icon from '../icon.png'
 export default () => (
   <main>
     <Head>
-      <meta charset="utf-8"/>
+      <meta charSet="utf-8"/>
       <title>Serverless Prettier</title>
       <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
       <link rel="icon" href={icon}/>
@@ -19,6 +19,9 @@ export default () => (
     <section>
       <Link href="/example">
         <a>API request example</a>
+      </Link>
+      <Link href="/editor">
+        <a>Editor</a>
       </Link>
     </section>
     <Footer />
