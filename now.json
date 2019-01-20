@@ -13,6 +13,7 @@
       "src": "src/www/package.json",
       "use": "@now/static-build"
     },
+    { "src": "dist/www.html", "use": "@now/static" },
     {
       "src": "src/api/index.js",
       "use": "@now/node"
