@@ -31,7 +31,7 @@
       "methods": [
         "POST"
       ],
-      "dest": "/src/api/index.js"
+      "dest": "/dist/prettier.js"
     },
     {
       "src": "/users",
