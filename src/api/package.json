@@ -14,6 +14,6 @@
     "prettier": "^1.15.3"
   },
   "scripts": {
-    "now-build": "npx parcel build -o prettier.js prettier.js"
+    "now-build": "npx parcel build -d ../../dist -o prettier.js prettier.js"
   }
 }

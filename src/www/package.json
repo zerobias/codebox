@@ -11,6 +11,6 @@
   },
   "dependencies": {},
   "scripts": {
-    "now-build": "npx parcel build -o www.html index.html"
+    "now-build": "npx parcel build -d ../../dist -o www.html index.html"
   }
 }
