@@ -13,7 +13,7 @@
       "src": "src/www/package.json",
       "use": "@now/static-build"
     },
-    { "src": "dist/www.html", "use": "@now/static" },
+    { "src": "src/www/index.html", "use": "@now/static" },
     {
       "src": "src/api/index.js",
       "use": "@now/node"
@@ -22,10 +22,11 @@
   "routes": [
     {
       "src": "/wow.html",
-      "headers": {
-        "cache-control": "s-maxage=1000"
-      },
       "dest": "/dist/www.html"
+    },
+    {
+      "src": "/www.html",
+      "dest": "/src/www/index.html"
     },
     {
       "src": "/api",
@@ -53,7 +54,8 @@
       "src": "/redirect",
       "status": 301,
       "headers": {
-        "Location": "https://zeit.co/"
+        "Location": "https://zeit.co/",
+        "cache-control": "s-maxage=1000"
       }
     }
   ]
