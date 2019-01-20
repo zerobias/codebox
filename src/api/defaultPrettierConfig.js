@@ -1,0 +1,9 @@
+export default {
+  trailingComma: "es5",
+  tabWidth: 2,
+  semi: true,
+  singleQuote: true,
+  bracketSpacing: false,
+  arrowParens: 'always',
+  parser: 'babel',
+}
