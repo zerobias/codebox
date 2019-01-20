@@ -1,1 +1,1 @@
-module.exports = require('../../dist/prettier.js')
+module.exports = require('../../dist/prettier.js').default
