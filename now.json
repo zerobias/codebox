@@ -1,0 +1,66 @@
+{
+  "name": "prettier-now",
+  "version": 2,
+  "alias": [
+    "prettier"
+  ],
+  "github": {
+    "autoAlias": true,
+    "enabled": true
+  },
+  "builds": [
+    {
+      "src": "src/www/package.json",
+      "use": "@now/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    },
+    {
+      "src": "src/api/prettier.js",
+      "use": "@now/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/index.html",
+      "headers": {
+        "cache-control": "s-maxage=1000"
+      },
+      "dest": "/dist/www.html"
+    },
+    {
+      "src": "/api",
+      "methods": [
+        "POST"
+      ],
+      "dest": "/dist/prettier.js"
+    },
+    {
+      "src": "/users",
+      "methods": [
+        "POST"
+      ],
+      "dest": "/users-api.js"
+    },
+    {
+      "src": "/users/(?<id>[^/]*)",
+      "dest": "/users-api.js?id=$id"
+    },
+    {
+      "src": "/.*",
+      "dest": "https://zerobias.net"
+    },
+    {
+      "src": "/legacy",
+      "status": 404
+    },
+    {
+      "src": "/redirect",
+      "status": 301,
+      "headers": {
+        "Location": "https://zeit.co/"
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "prettier-now-www",
+  "version": "1.0.0",
+  "main": "index.html",
+  "repository": "https://github.com/zerobias/prettier-now.git",
+  "author": "Dmitry <ribkatt@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "parcel-bundler": "^1.11.0"
+  },
+  "dependencies": {},
+  "scripts": {
+    "now-build": "npx parcel build -o www.html index.html"
+  }
+}

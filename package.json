@@ -1,0 +1,15 @@
+{
+  "name": "prettier-now-api",
+  "version": "1.0.0",
+  "main": "prettier.js",
+  "repository": "https://github.com/zerobias/prettier-now.git",
+  "author": "Dmitry <ribkatt@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "parcel-bundler": "^1.11.0"
+  },
+  "dependencies": {
+    "prettier": "^1.15.3"
+  }
+}
