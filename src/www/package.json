@@ -4,11 +4,7 @@
   "repository": "https://github.com/zerobias/prettier-now.git",
   "author": "Dmitry <ribkatt@gmail.com>",
   "license": "MIT",
-  "devDependencies": {
-    "parcel-bundler": "^1.11.0"
-  },
-  "dependencies": {},
-  "scripts": {
-    "now-build": "npx parcel build --no-minify --no-source-maps index.html"
+  "dependencies": {
+    "cross-fetch": "^3.0.0"
   }
 }
