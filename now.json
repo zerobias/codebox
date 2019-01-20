@@ -11,9 +11,8 @@
   "builds": [
     {
       "src": "src/www/package.json",
-      "use": "@now/static-build"
+      "use": "@now/next"
     },
-    { "src": "*.html", "use": "@now/static" },
     {
       "src": "src/api/index.js",
       "use": "@now/node",
@@ -22,38 +21,11 @@
   ],
   "routes": [
     {
-      "src": "/wow.html",
-      "dest": "/dist/www.html"
-    },
-    {
-      "src": "/www.html",
-      "dest": "/src/www/index.html"
-    },
-    {
-      "src": "/dist.html",
-      "dest": "/src/www/dist/index.html"
-    },
-    {
       "src": "/api",
       "methods": [
         "POST"
       ],
       "dest": "/src/api/index.js"
-    },
-    {
-      "src": "/users",
-      "methods": [
-        "POST"
-      ],
-      "dest": "/users-api.js"
-    },
-    {
-      "src": "/users/(?<id>[^/]*)",
-      "dest": "/users-api.js?id=$id"
-    },
-    {
-      "src": "/legacy",
-      "status": 404
     },
     {
       "src": "/redirect",
@@ -62,6 +34,10 @@
         "Location": "https://zeit.co/",
         "cache-control": "s-maxage=1000"
       }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/src/www/$1"
     }
   ]
 }
