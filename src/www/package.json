@@ -1,7 +1,6 @@
 {
   "name": "prettier-now-www",
   "version": "1.0.0",
-  "main": "../../dist/www.html",
   "repository": "https://github.com/zerobias/prettier-now.git",
   "author": "Dmitry <ribkatt@gmail.com>",
   "license": "MIT",
@@ -10,6 +9,6 @@
   },
   "dependencies": {},
   "scripts": {
-    "now-build": "npx parcel build -d ../../dist -o www.html index.html"
+    "now-build": "npx parcel build --no-minify --no-source-maps -d ../../dist -o www.html index.html"
   }
 }
