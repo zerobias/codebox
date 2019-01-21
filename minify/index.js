@@ -1,0 +1,1 @@
+module.exports = require('../dist/minify.js').default
