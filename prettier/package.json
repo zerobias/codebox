@@ -1,5 +1,5 @@
 {
-  "name": "prettier-now-api",
+  "name": "prettier-now-prettier",
   "version": "1.0.0",
   "repository": "https://github.com/zerobias/prettier-now.git",
   "author": "Dmitry <ribkatt@gmail.com>",
@@ -11,6 +11,6 @@
     "prettier": "^1.15.3"
   },
   "scripts": {
-    "now-build": "npx parcel build --bundle-node-modules --no-minify --no-source-maps -t node -d ../dist -o prettier.js prettier.js"
+    "now-build": "npx parcel build --bundle-node-modules --no-minify --no-source-maps -t node -d ../dist -o prettier.js service.js"
   }
 }
