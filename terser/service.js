@@ -45,7 +45,6 @@ export default taskService({
     const result = Terser.minify(code, config).code
     return {
       code: result,
-      config,
     }
   },
 })
