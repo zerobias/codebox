@@ -14,18 +14,30 @@
       "use": "@now/static-build"
     },
     {
-      "src": "api/index.js",
+      "src": "prettier/index.js",
+      "use": "@now/node",
+      "config": { "maxLambdaSize": "30mb" }
+    },
+    {
+      "src": "terser/index.js",
       "use": "@now/node",
       "config": { "maxLambdaSize": "30mb" }
     }
   ],
   "routes": [
     {
-      "src": "/api",
+      "src": "/prettier",
       "methods": [
         "POST"
       ],
-      "dest": "/api/index.js"
+      "dest": "/prettier/index.js"
+    },
+    {
+      "src": "/terser",
+      "methods": [
+        "POST"
+      ],
+      "dest": "/terser/index.js"
     },
     {
       "src": "/redirect",
