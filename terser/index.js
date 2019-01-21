@@ -1,1 +1,1 @@
-module.exports = require('../dist/minify.js').default
+module.exports = require('../dist/terser.js').default

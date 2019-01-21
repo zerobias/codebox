@@ -1,5 +1,5 @@
 {
-  "name": "prettier-now-minify",
+  "name": "prettier-now-terser",
   "version": "1.0.0",
   "repository": "https://github.com/zerobias/prettier-now.git",
   "author": "Dmitry <ribkatt@gmail.com>",
@@ -11,6 +11,6 @@
     "terser": "^3.14.1"
   },
   "scripts": {
-    "now-build": "npx parcel build --bundle-node-modules --no-minify --no-source-maps -t node -d ../dist -o minify.js minify.js"
+    "now-build": "npx parcel build --bundle-node-modules --no-minify --no-source-maps -t node -d ../dist -o terser.js service.js"
   }
 }
