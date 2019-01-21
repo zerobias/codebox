@@ -2,7 +2,7 @@
   "name": "prettier-now",
   "version": 2,
   "alias": [
-    "prettier-now"
+    "codebox"
   ],
   "github": {
     "autoAlias": true,
