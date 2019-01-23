@@ -26,8 +26,8 @@ export default {
   ],
   plugins: [
     'proposal-export-namespace-from',
-    'proposal-optional-chaining',
-    'proposal-nullish-coalescing-operator',
+    'proposal-export-default-from',
+    'proposal-object-rest-spread',
     ['proposal-class-properties', {loose: true}],
   ]
 }
