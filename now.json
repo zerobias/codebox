@@ -40,6 +40,13 @@
       "dest": "/terser/index.js"
     },
     {
+      "src": "/babel",
+      "methods": [
+        "POST"
+      ],
+      "dest": "/babel/index.js"
+    },
+    {
       "src": "/redirect",
       "status": 301,
       "headers": {

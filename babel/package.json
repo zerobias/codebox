@@ -1,0 +1,23 @@
+{
+  "name": "codebox-babel",
+  "version": "1.0.0",
+  "repository": "https://github.com/zerobias/prettier-now.git",
+  "author": "Dmitry <ribkatt@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "parcel-bundler": "^1.11.0"
+  },
+  "dependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/plugin-proposal-class-properties": "^7.3.0",
+    "@babel/plugin-proposal-export-namespace-from": "^7.2.0",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.2.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.2.0",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-flow": "^7.0.0",
+    "@babel/preset-react": "^7.0.0"
+  },
+  "scripts": {
+    "now-build": "npx parcel build --bundle-node-modules --no-minify --no-source-maps -t node -d ../dist -o babel.js service.js"
+  }
+}
