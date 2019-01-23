@@ -19,6 +19,11 @@
       "config": { "maxLambdaSize": "30mb" }
     },
     {
+      "src": "babel/index.js",
+      "use": "@now/node",
+      "config": { "maxLambdaSize": "30mb" }
+    },
+    {
       "src": "terser/index.js",
       "use": "@now/node",
       "config": { "maxLambdaSize": "30mb" }
