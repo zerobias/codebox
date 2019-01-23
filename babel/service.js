@@ -1,5 +1,5 @@
 
-import {transformAsync} from "@babel/standalone"
+import {transform} from "@babel/standalone"
 // import '@babel/preset-env-standalone'
 
 import taskService from '../lib/taskService'
@@ -15,7 +15,7 @@ export default taskService({
     const code = body.code
     const config = Object.assign({}, babelConfig, body.config)
 
-    const result = await transformAsync(code, config)
+    const result = await transform(code, config)
     return {
       code: result.code,
       config,
