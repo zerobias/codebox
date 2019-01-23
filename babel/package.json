@@ -14,8 +14,10 @@
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.2.0",
     "@babel/plugin-proposal-optional-chaining": "^7.2.0",
     "@babel/preset-env": "^7.3.1",
+    "@babel/preset-env-standalone": "^7.3.1",
     "@babel/preset-flow": "^7.0.0",
-    "@babel/preset-react": "^7.0.0"
+    "@babel/preset-react": "^7.0.0",
+    "@babel/standalone": "^7.3.1"
   },
   "scripts": {
     "now-build": "npx parcel build --bundle-node-modules --no-minify --no-source-maps -t node -d ../dist -o babel.js service.js"
