@@ -1,6 +1,6 @@
 
 import {transformAsync} from "@babel/standalone"
-import '@babel/preset-env-standalone'
+// import '@babel/preset-env-standalone'
 
 import taskService from '../lib/taskService'
 import babelConfig from './defaultBabelConfig'
