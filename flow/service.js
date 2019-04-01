@@ -15,7 +15,14 @@ export default taskService({
     }, bodyRaw)
     const code = body.code
     const config = Object.assign({}, {name: 'repl'}, body.config)
-    const result = check(code, config)
+    console.log('[flow] start request %s', code)
+    let result = 'fail'
+    try {
+      result = check(code, config)
+    } catch (err) {
+      console.error(err)
+    }
+    console.log('finish flow request', result)
     return {
       code: result,
       config: config,
