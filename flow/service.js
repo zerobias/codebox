@@ -7,7 +7,7 @@ function check(code, { name }) {
 }
 
 export default taskService({
-  serviceName: 'prettier',
+  serviceName: 'flow',
   async task(ctx, bodyRaw) {
     const body = Object.assign({}, {
       code: `//@flow\n\nconst foo: 'expect error' = 0`,
