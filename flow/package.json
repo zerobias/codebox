@@ -11,6 +11,6 @@
     "@goodmind/flow-js": "^0.96.0-flow.88283c7ae-build.be53d05"
   },
   "scripts": {
-    "now-build": "npx parcel build --bundle-node-modules --no-minify --no-source-maps -t node -d ../dist -o flow.js service.js && sed -i 's/require(\"fs\")/{}/g' ./dist/flow.js"
+    "now-build": "npx parcel build --bundle-node-modules --no-minify --no-source-maps -t node -d ../dist -o flow.js service.js && sed -i 's/require(\"fs\")/{}/g' ../dist/flow.js"
   }
 }
