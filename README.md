@@ -3,6 +3,16 @@ common dev enviroment as a service
 
 ## API
 
+### flow typechecker
+
+```http
+POST https://codebox.now.sh/flow
+{
+  "code": "source code",
+  "config": {"name": "filename"} // (optional) flow configuration
+}
+```
+
 ### code formatter
 
 ```http
