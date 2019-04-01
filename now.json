@@ -14,6 +14,11 @@
       "use": "@now/static-build"
     },
     {
+      "src": "flow/index.js",
+      "use": "@now/node",
+      "config": { "maxLambdaSize": "30mb" }
+    },
+    {
       "src": "prettier/index.js",
       "use": "@now/node",
       "config": { "maxLambdaSize": "30mb" }
@@ -30,6 +35,13 @@
     }
   ],
   "routes": [
+    {
+      "src": "/flow",
+      "methods": [
+        "POST"
+      ],
+      "dest": "/flow/index.js"
+    },
     {
       "src": "/prettier",
       "methods": [
