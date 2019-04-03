@@ -1,0 +1,16 @@
+{
+  "name": "codebox-prettier",
+  "version": "1.0.0",
+  "repository": "https://github.com/zerobias/prettier-now.git",
+  "author": "Dmitry <ribkatt@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.3"
+  },
+  "dependencies": {
+    "@goodmind/flow-js": "^0.96.0-flow.88283c7ae-build.be53d05"
+  },
+  "scripts": {
+    "now-build": "npx parcel build --bundle-node-modules --no-minify --no-source-maps -t node -d ../dist -o typeAtPos.js service.js && sed -i 's/require(\"fs\")/{}/g' ../dist/typeAtPos.js"
+  }
+}

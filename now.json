@@ -14,6 +14,11 @@
       "use": "@now/static-build"
     },
     {
+      "src": "type-at-pos/index.js",
+      "use": "@now/node",
+      "config": { "maxLambdaSize": "30mb" }
+    },
+    {
       "src": "flow/index.js",
       "use": "@now/node",
       "config": { "maxLambdaSize": "30mb" }
@@ -35,6 +40,13 @@
     }
   ],
   "routes": [
+    {
+      "src": "/type-at-pos",
+      "methods": [
+        "POST"
+      ],
+      "dest": "/type-at-pos/index.js"
+    },
     {
       "src": "/flow",
       "methods": [
