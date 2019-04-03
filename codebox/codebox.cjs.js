@@ -1,7 +1,8 @@
 
 const fetch = require('cross-fetch')
 
-exports.endpoint = 'https://codebox.now.sh/'
+const endpoint = 'https://codebox.now.sh/'
+exports.endpoint = endpoint
 
 const apiCall = (route) => async function codeboxRequest(code) {
   const req = await fetch(endpoint + route, {
