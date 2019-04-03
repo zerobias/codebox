@@ -1,0 +1,15 @@
+{
+  "name": "@zerobias/codebox",
+  "version": "1.0.0",
+  "description": "codebox api",
+  "main": "codebox.cjs.js",
+  "module": "codebox.es.js",
+  "author": "Zero Bias",
+  "license": "MIT",
+  "dependencies": {
+    "cross-fetch": "^3.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
