@@ -6635,7 +6635,7 @@ declare class NodeFilter {
 }
 
 // TODO: window.NodeIterator exists at runtime and behaves as a constructor
-//       as far as `instanceof` is concerned, but it is not callable.
+//       as far as \`instanceof\` is concerned, but it is not callable.
 declare class NodeIterator<RootNodeT, WhatToShowT> {
   root: RootNodeT;
   whatToShow: number;
@@ -6649,7 +6649,7 @@ declare class NodeIterator<RootNodeT, WhatToShowT> {
 }
 
 // TODO: window.TreeWalker exists at runtime and behaves as a constructor
-//       as far as `instanceof` is concerned, but it is not callable.
+//       as far as \`instanceof\` is concerned, but it is not callable.
 declare class TreeWalker<RootNodeT, WhatToShowT> {
   root: RootNodeT;
   whatToShow: number;
