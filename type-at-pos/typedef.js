@@ -1,5 +1,304 @@
 //@flow
 
+export const wasm = `
+// https://github.com/WebAssembly/design/blob/master/JS.md
+// https://developer.mozilla.org/en-US/docs/WebAssembly
+// https://github.com/WebAssembly/design/blob/master/Web.md
+
+type BufferSource = $TypedArray | ArrayBuffer;
+type ImportExportKind = 'function' | 'table' | 'memory' | 'global';
+type ImportObject = Object;
+type ResultObject = { module: WebAssembly$Module, instance: WebAssembly$Instance };
+
+// https://github.com/WebAssembly/design/blob/master/JS.md#exported-function-exotic-objects
+declare class ExportedFunctionExoticObject extends Function {
+  (): mixed;
+}
+
+declare class WebAssembly$Module {
+  constructor(bufferSource: BufferSource): void;
+
+  static exports(moduleObject: WebAssembly$Module): Array<{ name: string, kind: ImportExportKind }>;
+  static imports(moduleObject: WebAssembly$Module): Array<{ name: string, name: string, kind: ImportExportKind }>;
+  static customSections(moduleObject: WebAssembly$Module, sectionName: string): Array<ArrayBuffer>;
+}
+
+declare class WebAssembly$Instance {
+  constructor(moduleObject: WebAssembly$Module, importObject?: ImportObject): void;
+
+  +exports: { [exportedFunction: string]: ExportedFunctionExoticObject };
+}
+
+type MemoryDescriptor = { initial: number, maximum?: number };
+
+declare class WebAssembly$Memory {
+  constructor(memoryDescriptor: MemoryDescriptor): void;
+
+  +buffer: ArrayBuffer;
+
+  grow(delta: number): number;
+}
+
+type TableDescriptor = { element: 'anyfunc', initial: number, maximum?: number };
+
+declare class WebAssembly$Table {
+  constructor(tableDescriptor: TableDescriptor): void;
+
+  +length: number;
+
+  grow(delta: number): number;
+  get(index: number): ExportedFunctionExoticObject;
+  set(index: number, value: ExportedFunctionExoticObject): void;
+}
+
+declare class WebAssembly$CompileError extends Error {}
+declare class WebAssembly$LinkError extends Error {}
+declare class WebAssembly$RuntimeError extends Error {}
+
+declare function WebAssembly$instantiate(bufferSource: BufferSource, importObject?: ImportObject): Promise<ResultObject>;
+declare function WebAssembly$instantiate(moduleObject: WebAssembly$Module, importObject?: ImportObject): Promise<WebAssembly$Instance>;
+
+declare var WebAssembly: {
+  Module: typeof WebAssembly$Module;
+  Instance: typeof WebAssembly$Instance;
+  Memory: typeof WebAssembly$Memory;
+  Table: typeof WebAssembly$Table;
+  CompileError: typeof WebAssembly$CompileError;
+  LinkError: typeof WebAssembly$LinkError;
+  RuntimeError: typeof WebAssembly$RuntimeError;
+
+  validate(bufferSource: BufferSource): boolean;
+  compile(bufferSource: BufferSource): Promise<WebAssembly$Module>;
+  instantiate: typeof WebAssembly$instantiate;
+
+  // web embedding API
+  compileStreaming(source: Response | Promise<Response>): Promise<WebAssembly$Module>;
+  instantiateStreaming(source: Response | Promise<Response>, importObject?: ImportObject): Promise<ResultObject>;
+}
+
+`
+
+export const workers = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+type FrameType = 'auxiliary' | 'top-level' | 'nested' | 'none';
+type VisibilityState = 'hidden' | 'visible' | 'prerender' | 'unloaded';
+
+declare class WindowClient extends Client {
+  visibilityState: VisibilityState,
+  focused: boolean,
+  focus(): Promise<WindowClient>,
+  navigate(url: string): Promise<WindowClient>,
+}
+
+declare class Client {
+  id: string,
+  reserved: boolean,
+  url: string,
+  frameType: FrameType,
+  postMessage(message: any, transfer?: Iterator<any> | Array<any>): void,
+}
+
+declare class ExtendableEvent extends Event {
+  waitUntil(f: Promise<mixed>): void,
+}
+
+type ForeignFetchOptions = {
+  scopes: Iterator<string>,
+  origins: Iterator<string>,
+};
+
+declare class InstallEvent extends ExtendableEvent {
+  registerForeignFetch(options: ForeignFetchOptions): void,
+}
+
+declare class FetchEvent extends ExtendableEvent {
+  request: Request,
+  clientId: string,
+  isReload: boolean,
+  respondWith(response: Response | Promise<Response>): void,
+  preloadResponse: Promise<?Response>,
+}
+
+type ClientType = 'window' | 'worker' | 'sharedworker' | 'all';
+type ClientQueryOptions = {
+  includeUncontrolled?: boolean,
+  includeReserved?: boolean,
+  type?: ClientType,
+};
+
+declare class Clients {
+  get(id: string): Promise<?Client>,
+  matchAll(options?: ClientQueryOptions): Promise<Array<Client>>,
+  openWindow(url: string): Promise<?WindowClient>,
+  claim(): Promise<void>,
+}
+
+type ServiceWorkerState = 'installing'
+  | 'installed'
+  | 'activating'
+  | 'activated'
+  | 'redundant';
+
+declare class ServiceWorker extends EventTarget {
+  scriptURL: string,
+  state: ServiceWorkerState,
+
+  postMessage(message: any, transfer?: Iterator<any>): void,
+
+  onstatechange?: EventHandler,
+}
+
+declare class NavigationPreloadState {
+  enabled: boolean,
+  headerValue: string,
+}
+
+declare class NavigationPreloadManager {
+  enable: Promise<void>,
+  disable: Promise<void>,
+  setHeaderValue(value: string): Promise<void>,
+  getState: Promise<NavigationPreloadState>,
+}
+
+type PushSubscriptionOptions = {
+  userVisibleOnly?: boolean,
+  applicationServerKey?: string | ArrayBuffer | $ArrayBufferView,
+}
+
+declare class PushSubscriptionJSON {
+  endpoint: string,
+  expirationTime: number | null,
+  keys: {[string]: string};
+}
+
+declare class PushSubscription {
+  +endpoint: string,
+  +expirationTime: number | null,
+  +options: PushSubscriptionOptions,
+  getKey(name: string): ArrayBuffer | null,
+  toJSON(): PushSubscriptionJSON,
+  unsubscribe(): Promise<boolean>,
+}
+
+declare class PushManager {
+  +supportedContentEncodings: Array<string>,
+  subscribe(options?: PushSubscriptionOptions): Promise<PushSubscription>,
+  getSubscription(): Promise<PushSubscription | null>,
+  permissionState(options?: PushSubscriptionOptions): Promise<'granted' | 'denied' | 'prompt'>,
+}
+
+type ServiceWorkerUpdateViaCache = 'imports' | 'all' | 'none';
+
+declare class ServiceWorkerRegistration extends EventTarget {
+  +installing: ?ServiceWorker,
+  +waiting: ?ServiceWorker,
+  +active: ?ServiceWorker,
+  +navigationPreload: NavigationPreloadManager,
+  +scope: string,
+  +updateViaCache: ServiceWorkerUpdateViaCache,
+  +pushManager: PushManager,
+
+  update(): Promise<void>,
+  unregister(): Promise<boolean>,
+
+  onupdatefound?: EventHandler,
+}
+
+type WorkerType = 'classic' | 'module';
+
+type RegistrationOptions = {
+  scope?: string,
+  type?: WorkerType,
+  updateViaCache?: ServiceWorkerUpdateViaCache,
+};
+
+declare class ServiceWorkerContainer extends EventTarget {
+  +controller: ?ServiceWorker,
+  +ready: Promise<ServiceWorkerRegistration>,
+
+  getRegistration(clientURL: string): Promise<?ServiceWorkerRegistration>,
+  getRegistrations(): Promise<Iterator<ServiceWorkerRegistration>>,
+  register(
+    scriptURL: string,
+    options?: RegistrationOptions
+  ): Promise<ServiceWorkerRegistration>,
+  startMessages(): void,
+
+  oncontrollerchange?: EventHandler,
+  onmessage?: EventHandler,
+  onmessageerror?: EventHandler,
+}
+
+/**
+ * This feature has been removed from the Web standards.
+ */
+declare class ServiceWorkerMessageEvent extends Event {
+  data: any,
+  lastEventId: string,
+  origin: string,
+  ports: Array<MessagePort>,
+  source: ?(ServiceWorker | MessagePort),
+}
+
+declare class ExtendableMessageEvent extends ExtendableEvent {
+  data: any,
+  lastEventId: string,
+  origin: string,
+  ports: Array<MessagePort>,
+  source: ?(ServiceWorker | MessagePort),
+}
+
+type CacheQueryOptions = {
+  ignoreSearch?: boolean,
+  ignoreMethod?: boolean,
+  ignoreVary?: boolean,
+  cacheName?: string,
+}
+
+declare class Cache {
+  match(request: RequestInfo, options?: CacheQueryOptions): Promise<Response>,
+  matchAll(
+    request: RequestInfo,
+    options?: CacheQueryOptions
+  ): Promise<Array<Response>>,
+  add(request: RequestInfo): Promise<void>,
+  addAll(requests: Array<RequestInfo>): Promise<void>,
+  put(request: RequestInfo, response: Response): Promise<void>,
+  delete(request: RequestInfo, options?: CacheQueryOptions): Promise<boolean>,
+  keys(
+    request?: RequestInfo,
+    options?: CacheQueryOptions
+  ): Promise<Array<Request>>,
+}
+
+declare class CacheStorage {
+  match(request: RequestInfo, options?: CacheQueryOptions): Promise<Response>,
+  has(cacheName: string): Promise<true>,
+  open(cacheName: string): Promise<Cache>,
+  delete(cacheName: string): Promise<boolean>,
+  keys(): Promise<Array<string>>,
+}
+
+// Service worker global scope
+// https://www.w3.org/TR/service-workers/#service-worker-global-scope
+declare var clients: Clients;
+declare var caches: CacheStorage;
+declare var registration: ServiceWorkerRegistration;
+declare function skipWaiting(): Promise<void>;
+declare var onactivate: ?EventHandler;
+declare var oninstall: ?EventHandler;
+declare var onfetch: ?EventHandler;
+declare var onforeignfetch: ?EventHandler;
+declare var onmessage: ?EventHandler;
+
+`
+
 export const bom = `
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.

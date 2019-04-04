@@ -12,6 +12,8 @@ import {
   node,
   react,
   streams,
+  workers,
+  wasm,
 } from './typedef'
 
 let start
@@ -27,6 +29,8 @@ try {
   flow.registerFile('/static/node.js', node)
   flow.registerFile('/static/react.js', react)
   flow.registerFile('/static/streams.js', streams)
+  flow.registerFile('/static/serviceworkers.js', workers)
+  flow.registerFile('/static/webassembly.js', wasm)
 
   flow.setLibs([
     '/static/bom.js',
@@ -38,6 +42,8 @@ try {
     '/static/node.js',
     '/static/react.js',
     '/static/streams.js',
+    '/static/serviceworkers.js',
+    '/static/webassembly.js',
   ])
 } catch (err) {
   console.error(err)
