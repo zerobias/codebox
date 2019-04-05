@@ -13,6 +13,7 @@ import {
   intl,
   node,
   react,
+  reactDom,
   streams,
   workers,
   wasm,
@@ -33,6 +34,7 @@ try {
   flow.registerFile('/static/streams.js', streams)
   flow.registerFile('/static/serviceworkers.js', workers)
   flow.registerFile('/static/webassembly.js', wasm)
+  flow.registerFile('/static/reactDom.js', reactDom)
   flow.registerFile('/static/effector.js', effector)
   // flow.registerFile('/static/effectorGlobal.js', effectorGlobal)
 
@@ -48,6 +50,7 @@ try {
     '/static/streams.js',
     '/static/serviceworkers.js',
     '/static/webassembly.js',
+    '/static/reactDom.js',
     '/static/effector.js',
     // '/static/effectorGlobal.js',
   ])
