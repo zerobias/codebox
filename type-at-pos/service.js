@@ -3,6 +3,8 @@ import flow from '@goodmind/flow-js'
 import taskService from '../lib/taskService'
 
 import {
+  effector,
+  effectorGlobal,
   bom,
   core,
   cssom,
@@ -31,6 +33,8 @@ try {
   flow.registerFile('/static/streams.js', streams)
   flow.registerFile('/static/serviceworkers.js', workers)
   flow.registerFile('/static/webassembly.js', wasm)
+  flow.registerFile('/static/effector.js', effector)
+  flow.registerFile('/static/effectorGlobal.js', effectorGlobal)
 
   flow.setLibs([
     '/static/bom.js',
@@ -44,6 +48,8 @@ try {
     '/static/streams.js',
     '/static/serviceworkers.js',
     '/static/webassembly.js',
+    '/static/effector.js',
+    '/static/effectorGlobal.js',
   ])
 } catch (err) {
   console.error(err)
