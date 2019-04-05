@@ -32,10 +32,10 @@ try {
   flow.registerFile('/static/intl.js', intl)
   flow.registerFile('/static/node.js', node)
   flow.registerFile('/static/react.js', react)
+  flow.registerFile('/static/react-dom.js', reactDom)
   flow.registerFile('/static/streams.js', streams)
   flow.registerFile('/static/serviceworkers.js', workers)
   flow.registerFile('/static/webassembly.js', wasm)
-  flow.registerFile('/static/reactDom.js', reactDom)
   flow.registerFile('/static/effector.js', effector)
   flow.registerFile('/static/effectorReact.js', effectorReact)
   // flow.registerFile('/static/effectorGlobal.js', effectorGlobal)
@@ -49,10 +49,10 @@ try {
     '/static/intl.js',
     '/static/node.js',
     '/static/react.js',
+    '/static/react-dom.js',
     '/static/streams.js',
     '/static/serviceworkers.js',
     '/static/webassembly.js',
-    '/static/reactDom.js',
     '/static/effector.js',
     '/static/effectorReact.js',
     // '/static/effectorGlobal.js',
