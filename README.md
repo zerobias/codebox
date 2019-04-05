@@ -43,6 +43,12 @@ POST https://codebox.now.sh/babel
 }
 ```
 
+### type-at-pos
+
+```http
+POST https://codebox.now.sh/type-at-pos
+```
+
 ### website
 [https://codebox.now.sh](https://codebox.now.sh)
 
