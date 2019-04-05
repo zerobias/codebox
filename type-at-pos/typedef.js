@@ -1,5 +1,84 @@
 //@flow
 
+export const effectorReact = `
+
+declare module 'effector-react' {
+  import type {
+    ComponentType,
+    Component,
+    ElementConfig,
+    Node,
+    Context as ContextType,
+  } from 'react'
+  import type {Store, Event} from 'effector'
+
+  declare export type StoreConsumer<State> = ComponentType<{|
+    children: (state: State) => Node,
+  |}>
+
+  declare export type StoreProvider<State> = ComponentType<{|
+    value: State,
+    children?: Node,
+  |}>
+
+  declare export type StoreComponent<State> = ComponentType<{|
+    children: (state: State) => Node,
+  |}>
+
+  declare export type Gate<Props = {||}> = Class<Component<Props, {||}>> & {|
+    isOpen: boolean,
+    isTerminated: boolean,
+    open: Event<void>,
+    close: Event<void>,
+    status: Store<boolean>,
+    destructor: Event<void>,
+    current: Props,
+    state: Store<Props>,
+    childGate<Next>(childName?: string): Gate<Next>,
+  |}
+
+  declare export function useStore<State>(store: Store<State>): State
+  declare export function useGate<Props>(Gate: Gate<Props>, props?: Props): void
+
+  declare export function createGate<Props>(name?: string): Gate<Props>
+  declare export function createComponent<Props, State>(
+    store: Store<State>,
+    view: (props: Props, state: State) => Node,
+  ): ComponentType<Props>
+  declare export function createContextComponent<Props, State, Context>(
+    store: Store<State>,
+    context: ContextType<Context>,
+    view: (props: Props, state: State, context: Context) => Node,
+  ): ComponentType<Props>
+
+  declare export function connect<
+    State: {[key: string]: any, ...},
+    Com: ComponentType<*>,
+  >(
+    Component: Com,
+  ): (
+    store: Store<State>,
+  ) => ComponentType<$Exact<$Diff<ElementConfig<Com>, State>>>
+
+  declare export function createStoreConsumer<State>(
+    store: Store<State>,
+  ): StoreConsumer<State>
+
+  declare export function unstable_createStoreProvider<State>(
+    store: Store<State>,
+  ): StoreProvider<State>
+
+  declare export function createReactState<
+    State: {[key: string]: any, ...},
+    Com: ComponentType<*>,
+  >(
+    store: Store<State>,
+    Component: Com,
+  ): ComponentType<$Exact<$Diff<ElementConfig<Com>, State>>>
+}
+
+`
+
 export const effectorGlobal = `
 //prettier-ignore
 declare type kind =
