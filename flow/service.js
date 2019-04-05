@@ -3,6 +3,7 @@ import flow from '@goodmind/flow-js'
 import taskService from '../lib/taskService'
 
 import {
+  effectorReact,
   effector,
   // effectorGlobal,
   bom,
@@ -36,6 +37,7 @@ try {
   flow.registerFile('/static/webassembly.js', wasm)
   flow.registerFile('/static/reactDom.js', reactDom)
   flow.registerFile('/static/effector.js', effector)
+  flow.registerFile('/static/effectorReact.js', effectorReact)
   // flow.registerFile('/static/effectorGlobal.js', effectorGlobal)
 
   flow.setLibs([
@@ -52,6 +54,7 @@ try {
     '/static/webassembly.js',
     '/static/reactDom.js',
     '/static/effector.js',
+    '/static/effectorReact.js',
     // '/static/effectorGlobal.js',
   ])
 } catch (err) {
