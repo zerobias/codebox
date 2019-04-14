@@ -4,7 +4,7 @@ import taskService from '../lib/taskService'
 
 import {
   effectorReact,
-  effector,
+  // effector,
   // effectorGlobal,
   bom,
   core,
@@ -19,6 +19,8 @@ import {
   workers,
   wasm,
 } from './typedef'
+
+import {effector, effectorGlobal} from '../commonFlow/effectorTypedef'
 
 let start
 try {
@@ -38,7 +40,7 @@ try {
   flow.registerFile('/static/webassembly.js', wasm)
   flow.registerFile('/static/effector.js', effector)
   flow.registerFile('/static/effectorReact.js', effectorReact)
-  // flow.registerFile('/static/effectorGlobal.js', effectorGlobal)
+  flow.registerFile('/static/effectorGlobal.js', effectorGlobal)
 
   flow.setLibs([
     '/static/bom.js',
@@ -55,7 +57,7 @@ try {
     '/static/webassembly.js',
     '/static/effector.js',
     '/static/effectorReact.js',
-    // '/static/effectorGlobal.js',
+    '/static/effectorGlobal.js',
   ])
 } catch (err) {
   console.error(err)
