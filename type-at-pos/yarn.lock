@@ -742,10 +742,10 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
-"@goodmind/flow-js@^0.96.0-flow.88283c7ae-build.be53d05":
-  version "0.96.0-flow.88283c7ae-build.be53d05"
-  resolved "https://registry.yarnpkg.com/@goodmind/flow-js/-/flow-js-0.96.0-flow.88283c7ae-build.be53d05.tgz#9dddd7c31ca1c0fcdf167a4b5a4b214f6fb29c0c"
-  integrity sha512-GI4Q+y7Z5C8KnlYV8C9Chmzf7SB+M7MT4xdrMy2HsByVwYAYurHJtwHIY1q1rPvLvGx9JhN18lLXI1oIyqXDgA==
+"@goodmind/flow-js@^0.98.0":
+  version "0.98.0"
+  resolved "https://registry.yarnpkg.com/@goodmind/flow-js/-/flow-js-0.98.0.tgz#9f7c1ba39095c4c5acdb3843c81f001161bda258"
+  integrity sha512-9wKANe0twNdJby4pg8pAYU5AKJxJ2mL9n0FyMB6FcTmc33OO/WKr59sumaeRWwUUetRjdzsVKwHrbMRHTU2mlA==
 
 "@iarna/toml@^2.2.0":
   version "2.2.1"

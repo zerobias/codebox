@@ -8,7 +8,7 @@
     "parcel-bundler": "^1.12.3"
   },
   "dependencies": {
-    "@goodmind/flow-js": "^0.96.0-flow.88283c7ae-build.be53d05"
+    "@goodmind/flow-js": "^0.98.0"
   },
   "scripts": {
     "now-build": "npx parcel build --bundle-node-modules --no-minify --no-source-maps -t node -d ../dist -o typeAtPos.js service.js && sed -i 's/require(\"fs\")/{}/g' ../dist/typeAtPos.js"
