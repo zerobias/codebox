@@ -53,5 +53,3 @@ POST https://codebox.now.sh/type-at-pos
 [https://codebox.now.sh](https://codebox.now.sh)
 
 based on next.js
-
-
