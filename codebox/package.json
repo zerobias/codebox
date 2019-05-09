@@ -1,9 +1,10 @@
 {
   "name": "@zerobias/codebox",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "codebox api",
   "main": "codebox.cjs.js",
   "module": "codebox.es.js",
+  "typings": "index.d.ts",
   "author": "Zero Bias",
   "license": "MIT",
   "dependencies": {
