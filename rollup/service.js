@@ -1,21 +1,23 @@
 
+console.log('init rollup service')
 // import {resolve, dirname} from 'path'
 import {rollup} from 'rollup'
-import babel from 'rollup-plugin-babel'
-import json from 'rollup-plugin-json'
+// import babel from 'rollup-plugin-babel'
+// import json from 'rollup-plugin-json'
 
 import taskService from '../lib/taskService'
-import babelConfig from './defaultBabelConfig'
+// import babelConfig from './defaultBabelConfig'
 
-const babelPlugin = babel(babelConfig)
-const jsonPlugin = json({
-  preferConst: true,
-  indent: '  ',
-})
+// const babelPlugin = babel(babelConfig)
+// const jsonPlugin = json({
+//   preferConst: true,
+//   indent: '  ',
+// })
 
 export default taskService({
   serviceName: 'rollup',
   async task(ctx, bodyRaw) {
+    console.log('start rollup request')
     const body = Object.assign({}, {
       files: [],
       entry: 'repl.js',
@@ -33,8 +35,8 @@ export default taskService({
           resolveId(importee, importer) {
             if (!importer) return importee;
             if (importee[0] !== '.') return false;
-            const {resolve, dirname} = require('path')
-            const resolved = resolve(dirname(importer), importee).replace(/^\.\//, '');
+            // const {resolve, dirname} = require('path')
+            const resolved = importee // resolve(dirname(importer), importee).replace(/^\.\//, '');
             if (filesByID.has(resolved)) return resolved;
             const resolvedJS = `${resolved}.js`;
             if (filesByID.has(resolvedJS)) return resolvedJS;
@@ -46,8 +48,8 @@ export default taskService({
             return filesByID.get(id).code;
           }
 				},
-        jsonPlugin,
-        babelPlugin,
+        // jsonPlugin,
+        // babelPlugin,
       ],
     })
     console.log('generate bundle')
