@@ -37,3 +37,15 @@ export const typeAtPos = apiCall({
     })
   },
 })
+
+export const rollup = apiCall({
+  route: 'rollup',
+  serializer({entry, files}) {
+    const result = {}
+    result.files = files
+    if (typeof entry === 'string') {
+      result.entry = entry
+    }
+    return JSON.stringify(result)
+  },
+})
