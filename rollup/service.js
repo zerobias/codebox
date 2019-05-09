@@ -1,6 +1,6 @@
 
 console.log('init rollup service')
-// import {resolve, dirname} from 'path'
+import {resolve, dirname} from 'rollup-plugin-node-builtins/src/es6/path'
 import {rollup} from 'rollup/dist/rollup.browser.es'
 // import babel from 'rollup-plugin-babel'
 // import json from 'rollup-plugin-json'
@@ -36,7 +36,7 @@ export default taskService({
             if (!importer) return importee;
             if (importee[0] !== '.') return false;
             // const {resolve, dirname} = require('path')
-            const resolved = importee // resolve(dirname(importer), importee).replace(/^\.\//, '');
+            const resolved = resolve(dirname(importer), importee).replace(/^\.\//, '');
             if (filesByID.has(resolved)) return resolved;
             const resolvedJS = `${resolved}.js`;
             if (filesByID.has(resolvedJS)) return resolvedJS;
