@@ -1,5 +1,5 @@
 
-import {resolve, dirname} from 'path'
+// import {resolve, dirname} from 'path'
 import {rollup} from 'rollup'
 import babel from 'rollup-plugin-babel'
 import json from 'rollup-plugin-json'
@@ -33,6 +33,7 @@ export default taskService({
           resolveId(importee, importer) {
             if (!importer) return importee;
             if (importee[0] !== '.') return false;
+            const {resolve, dirname} = require('path')
             const resolved = resolve(dirname(importer), importee).replace(/^\.\//, '');
             if (filesByID.has(resolved)) return resolved;
             const resolvedJS = `${resolved}.js`;

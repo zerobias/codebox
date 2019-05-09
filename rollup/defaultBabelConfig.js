@@ -1,4 +1,3 @@
-//@flow
 
 export default {
   babelrc: false,
@@ -9,7 +8,7 @@ export default {
       '@babel/preset-env',
       {
         loose: true,
-        useBuiltIns: false,
+        // useBuiltIns: false,
         modules: false,
         shippedProposals: true,
         targets: {
