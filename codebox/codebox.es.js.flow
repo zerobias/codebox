@@ -1,0 +1,26 @@
+//@flow
+
+declare export var endpoint: string
+
+declare export function terser(code: string): Promise<{
+  success: boolean,
+  code: string,
+}>
+
+declare export function prettier(code: string): Promise<{
+  success: boolean,
+  code: string,
+}>
+
+declare export function babel(code: string): Promise<{
+  success: boolean,
+  code: string,
+}>
+
+declare export function rollup(opts: {
+  files: Array<{name: string, code: string}>,
+  entry?: string,
+}): Promise<{
+  success: boolean,
+  code: string,
+}>
