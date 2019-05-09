@@ -34,8 +34,16 @@ export default taskService({
         {
           resolveId(importee, importer) {
             if (!importer) return importee;
+            console.log({
+              importee,
+              importer,
+              "importee[0] !== '.'": importee[0] !== '.',
+              'dirname(importer)': dirname(importer),
+              'resolve(dirname(importer), importee)': resolve(dirname(importer), importee),
+              "resolve(dirname(importer), importee).replace(/^\.\//, '')": resolve(dirname(importer), importee).replace(/^\.\//, ''),
+            })
             if (importee[0] !== '.') return false;
-            // const {resolve, dirname} = require('path')
+            
             const resolved = resolve(dirname(importer), importee).replace(/^\.\//, '');
             if (filesByID.has(resolved)) return resolved;
             const resolvedJS = `${resolved}.js`;
