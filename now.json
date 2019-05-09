@@ -81,6 +81,13 @@
       "dest": "/babel/index.js"
     },
     {
+      "src": "/rollup",
+      "methods": [
+        "POST"
+      ],
+      "dest": "/rollup/index.js"
+    },
+    {
       "src": "/redirect",
       "status": 301,
       "headers": {
