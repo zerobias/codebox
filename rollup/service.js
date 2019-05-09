@@ -1,7 +1,7 @@
 
 console.log('init rollup service')
 // import {resolve, dirname} from 'path'
-import {rollup} from 'rollup'
+import {rollup} from 'rollup/dist/rollup.browser.es'
 // import babel from 'rollup-plugin-babel'
 // import json from 'rollup-plugin-json'
 
