@@ -6,6 +6,7 @@ import {rollup} from 'rollup/dist/rollup.browser.es'
 // import json from 'rollup-plugin-json'
 
 import taskService from '../lib/taskService'
+import fetch from 'cross-fetch'
 // import babelConfig from './defaultBabelConfig'
 
 // const babelPlugin = babel(babelConfig)
@@ -24,8 +25,20 @@ export default taskService({
     }, bodyRaw)
     const files = body.files
     const filesByID = new Map()
+    const urlsByID = new Map()
     for (const file of files) {
       filesByID.set(file.name, file)
+    }
+    function fetchIfUncached(url) {
+      if (!urlsByID.has(url)) {
+        urlsByID.set(url, fetch(url)
+          .then(r => r.text())
+          .catch(err => {
+            console.error(err);
+            urlsByID.delete(url);
+          }));
+      }
+      return urlsByID.get(url);
     }
     console.log('init rollup')
     const build = await rollup({
@@ -43,7 +56,7 @@ export default taskService({
               "resolve(dirname(importer), importee).replace(/^\.\//, '')": resolve(dirname(importer), importee).replace(/^\.\//, ''),
             })
             if (importee[0] !== '.') return false;
-            
+
             const resolved = resolve(dirname(importer), importee).replace(/^\.\//, '');
             if (filesByID.has(resolved)) return resolved;
             const resolvedJS = `${resolved}.js`;
@@ -53,6 +66,7 @@ export default taskService({
             throw new Error(`Could not resolve '${importee}' from '${importer}'`);
           },
           load(id) {
+            if (id.startsWith(`https://`) || id.startsWith(`http://`)) return fetchIfUncached(id);
             return filesByID.get(id).code;
           }
 				},
