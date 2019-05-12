@@ -1,0 +1,49 @@
+image: docker:latest
+
+before_script:
+  - apt-get update -y  # Updating the Ubuntu Docker instance.
+  - apt install -y zip jq
+  - pip install awscli --upgrade --user
+  - export PATH=~/.local/bin:$PATH # Required for awscli.
+  - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+  - nvm install 8
+  - npm i -g yarn
+stages:
+  - deploy
+
+variables:
+  S3_BUCKET: codebox-backend
+
+deploy_rollup:
+  stage: deploy
+  
+  only:
+  - master
+
+  script:
+  - cd rollup &&
+    yarn &&
+    npx parcel build
+      --no-cache
+      --no-minify
+      --no-source-maps
+      -t node
+      --bundle-node-modules
+      -d ./dist -o lambda.js lambda.js
+  - zip -r rollup.zip ./dist # -x \*.pyc *.git* 
+  - aws s3 cp rollup.zip s3://$S3_BUCKET/rollup.zip
+  - aws lambda update-function-code
+      --region eu-west-1
+      --function-name codebox-rollup
+      --zip-file fileb://rollup.zip ||
+    aws lambda create-function
+      --region eu-west-1
+      --function-name codebox-rollup
+      --runtime nodejs8.10
+      --role arn:aws:iam::166000737765:role/service-role/codebox-rollup-role-hlphme7f
+      --handler lambda.default
+      --code S3Bucket=$S3_BUCKET,S3Key=rollup.zip
+      --memory-size 1024
+
+  environment:
+    name: master
