@@ -1,8 +1,8 @@
 image: node:8
 
 before_script:
+  - apt-get update && apt-get install python-dev python-pip -y
   - pip install awscli --upgrade --user
-  - export PATH=~/.local/bin:$PATH # Required for awscli.
   - npm i -g yarn
 stages:
   - deploy
