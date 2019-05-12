@@ -1,7 +1,7 @@
 image: node:8
 
 before_script:
-  - apt-get update && apt-get install python-dev python-pip -y
+  - apt-get update && apt-get install python-dev python-pip zip jq -y
   - pip install awscli --upgrade --user
   - export PATH=~/.local/bin:$PATH
   - npm i -g yarn
