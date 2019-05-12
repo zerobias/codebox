@@ -1,13 +1,13 @@
 console.log('init rollup service')
 import {resolve, dirname} from 'path'
 import {rollup} from 'rollup'
-import babel from 'rollup-plugin-babel'
+// import babel from 'rollup-plugin-babel'
 import fetch from 'cross-fetch'
 
 import {task, send} from '../lib/lambdaTask'
-import babelConfig from './defaultBabelConfig'
+// import babelConfig from './defaultBabelConfig'
 
-const babelPlugin = babel(babelConfig)
+// const babelPlugin = babel(babelConfig)
 
 export default task({
   name: 'rollup',
@@ -65,7 +65,7 @@ export default task({
           }
 				},
         // jsonPlugin,
-        babelPlugin,
+        // babelPlugin,
       ],
     })
     console.log('generate bundle')
