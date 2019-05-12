@@ -1,4 +1,12 @@
 
+import '@babel/preset-flow'
+import '@babel/preset-react'
+import '@babel/preset-env'
+import '@babel/plugin-proposal-export-namespace-from'
+import '@babel/plugin-proposal-optional-chaining'
+import '@babel/plugin-proposal-nullish-coalescing-operator'
+import '@babel/plugin-proposal-class-properties'
+
 export default {
   babelrc: false,
   presets: [
