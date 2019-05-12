@@ -27,9 +27,10 @@ deploy_rollup:
       -t node
       --bundle-node-modules
       -d ./dist -o lambda.js lambda.js
-  - zip -r rollup.zip ./dist # -x \*.pyc *.git* 
+  - cd dist && zip -r rollup.zip . # -x \*.pyc *.git* 
   - aws s3 cp rollup.zip s3://$S3_BUCKET/rollup.zip
   - aws lambda update-function-code
+      --handler lambda.default
       --region eu-west-1
       --function-name codebox-rollup
       --zip-file fileb://rollup.zip ||
