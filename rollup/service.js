@@ -6,7 +6,7 @@ import {rollup} from 'rollup/dist/rollup.browser.es'
 // import json from 'rollup-plugin-json'
 
 import taskService from '../lib/taskService'
-import fetch from 'cross-fetch'
+import fetch from 'whatwg-fetch'
 // import babelConfig from './defaultBabelConfig'
 
 // const babelPlugin = babel(babelConfig)

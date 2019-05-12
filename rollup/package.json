@@ -22,7 +22,8 @@
     "rollup-plugin-json": "^4.0.0",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-resolve": "^4.2.3",
-    "rollup-plugin-replace": "^2.2.0"
+    "rollup-plugin-replace": "^2.2.0",
+    "whatwg-fetch": "^3.0.0"
   },
   "scripts": {
     "now-build": "npx parcel build --bundle-node-modules --no-minify --no-source-maps -t node -d ../dist -o rollup.js service.js"
