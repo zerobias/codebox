@@ -12,13 +12,16 @@ variables:
   S3_BUCKET: codebox-backend
 
 deploy_rollup:
+  variables:
+    SERVICE_NAME: rollup
+    LAMBDA_ROLE: 166000737765:role/service-role/codebox-rollup-role-hlphme7f
   stage: deploy
-  
+
   only:
   - master
 
   script:
-  - cd rollup &&
+  - cd $SERVICE_NAME &&
     yarn &&
     npx parcel build
       --no-cache
@@ -27,19 +30,56 @@ deploy_rollup:
       -t node
       --bundle-node-modules
       -d ./dist -o lambda.js lambda.js
-  - cd dist && zip -r rollup.zip . # -x \*.pyc *.git* 
-  - aws s3 cp rollup.zip s3://$S3_BUCKET/rollup.zip
+  - cd dist && zip -r $SERVICE_NAME.zip . # -x \*.pyc *.git*
+  - aws s3 cp $SERVICE_NAME.zip s3://$S3_BUCKET/$SERVICE_NAME.zip
   - aws lambda update-function-code
       --region eu-west-1
-      --function-name codebox-rollup
-      --zip-file fileb://rollup.zip ||
+      --function-name codebox-$SERVICE_NAME
+      --zip-file fileb://$SERVICE_NAME.zip ||
     aws lambda create-function
       --region eu-west-1
-      --function-name codebox-rollup
+      --function-name codebox-$SERVICE_NAME
       --runtime nodejs8.10
-      --role arn:aws:iam::166000737765:role/service-role/codebox-rollup-role-hlphme7f
+      --role arn:aws:iam::$LAMBDA_ROLE
       --handler lambda.default
-      --code S3Bucket=$S3_BUCKET,S3Key=rollup.zip
+      --code S3Bucket=$S3_BUCKET,S3Key=$SERVICE_NAME.zip
+      --memory-size 1024
+
+  environment:
+    name: master
+
+deploy_prettier:
+  variables:
+    SERVICE_NAME: rollup
+    LAMBDA_ROLE: 166000737765:role/service-role/codebox-prettier-role-9kiko2nz
+  stage: deploy
+
+  only:
+  - master
+
+  script:
+  - cd $SERVICE_NAME &&
+    yarn &&
+    npx parcel build
+      --no-cache
+      --no-minify
+      --no-source-maps
+      -t node
+      --bundle-node-modules
+      -d ./dist -o lambda.js lambda.js
+  - cd dist && zip -r $SERVICE_NAME.zip . # -x \*.pyc *.git*
+  - aws s3 cp $SERVICE_NAME.zip s3://$S3_BUCKET/$SERVICE_NAME.zip
+  - aws lambda update-function-code
+      --region eu-west-1
+      --function-name codebox-$SERVICE_NAME
+      --zip-file fileb://$SERVICE_NAME.zip ||
+    aws lambda create-function
+      --region eu-west-1
+      --function-name codebox-$SERVICE_NAME
+      --runtime nodejs8.10
+      --role arn:aws:iam::$LAMBDA_ROLE
+      --handler lambda.default
+      --code S3Bucket=$S3_BUCKET,S3Key=$SERVICE_NAME.zip
       --memory-size 1024
 
   environment:
