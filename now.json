@@ -24,17 +24,7 @@
       "config": { "maxLambdaSize": "30mb" }
     },
     {
-      "src": "prettier/index.js",
-      "use": "@now/node",
-      "config": { "maxLambdaSize": "30mb" }
-    },
-    {
       "src": "babel/index.js",
-      "use": "@now/node",
-      "config": { "maxLambdaSize": "30mb" }
-    },
-    {
-      "src": "rollup/index.js",
       "use": "@now/node",
       "config": { "maxLambdaSize": "30mb" }
     },
@@ -60,13 +50,6 @@
       "dest": "/flow/index.js"
     },
     {
-      "src": "/prettier",
-      "methods": [
-        "POST"
-      ],
-      "dest": "/prettier/index.js"
-    },
-    {
       "src": "/terser",
       "methods": [
         "POST"
@@ -81,19 +64,20 @@
       "dest": "/babel/index.js"
     },
     {
-      "src": "/rollup",
-      "methods": [
-        "POST"
-      ],
-      "dest": "/rollup/index.js"
-    },
-    {
       "src": "/redirect",
       "status": 301,
       "headers": {
         "Location": "https://zeit.co/",
         "cache-control": "s-maxage=1000"
       }
+    },
+    {
+      "src": "/rollup",
+      "dest": "https://qwjv2frddh.execute-api.eu-west-1.amazonaws.com/prod/codebox-rollup"
+    },
+    {
+      "src": "/prettier",
+      "dest": "https://qwjv2frddh.execute-api.eu-west-1.amazonaws.com/prod/codebox-prettier"
     },
     {
       "src": "/(.*)",
