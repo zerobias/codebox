@@ -1,7 +1,7 @@
-import angular from 'prettier/parser-angular'
+// import angular from 'prettier/parser-angular'
 import babylon from 'prettier/parser-babylon'
 import flow from 'prettier/parser-flow'
-import glimmer from 'prettier/parser-glimmer'
+// import glimmer from 'prettier/parser-glimmer'
 import graphql from 'prettier/parser-graphql'
 import html from 'prettier/parser-html'
 import markdown from 'prettier/parser-markdown'
@@ -10,10 +10,10 @@ import typescript from 'prettier/parser-typescript'
 import yaml from 'prettier/parser-yaml'
 
 export default [
-  angular,
+  // angular,
   babylon,
   flow,
-  glimmer,
+  // glimmer,
   graphql,
   html,
   markdown,
