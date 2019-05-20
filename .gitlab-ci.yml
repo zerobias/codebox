@@ -50,7 +50,7 @@ deploy_rollup:
 
 deploy_prettier:
   variables:
-    SERVICE_NAME: rollup
+    SERVICE_NAME: prettier
     LAMBDA_ROLE: 166000737765:role/service-role/codebox-prettier-role-9kiko2nz
   stage: deploy
 
