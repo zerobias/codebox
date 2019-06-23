@@ -5,6 +5,8 @@
   "author": "Dmitry <ribkatt@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "babel-jest": "^24.8.0",
+    "jest": "^24.8.0",
     "parcel-bundler": "^1.12.3",
     "serverless": "^1.45.1"
   },
