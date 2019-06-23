@@ -49,6 +49,10 @@ export default task({
       }
       return urlsByID.get(url)
     }
+    async function followRedirects(url) {
+      const res = await fetchIfUncached(url)
+      return res.url
+    }
     console.log('init rollup')
     const build = await rollup({
       input: body.entry,
@@ -73,15 +77,10 @@ export default task({
             // importing from a URL
             if (importee.startsWith('http:') || importee.startsWith('https:'))
               return importee
-            
+
             if (importer.startsWith('http:') || importer.startsWith('https:')) {
-              const importerURL = new URL(importer)
-              const base =
-                extname(importerURL.pathname) === ''
-                  ? importerURL.pathname + '/'
-                  : importerURL.pathname
-              const url = new URL(importee, new URL(base, importerURL.origin))
-              return url.toString()
+              const url = new URL(importee, await followRedirects(importer)).href
+              return await followRedirects(url)
             }
 
             if (importee[0] !== '.') return false
@@ -101,7 +100,11 @@ export default task({
           },
           async load(id) {
             if (id.startsWith('https:') || id.startsWith('http:')) {
-              const res = await fetchIfUncached(id)
+              const url = new URL(id)
+              if (!url.searchParams.has('module')) {
+                url.searchParams.set('module', '')
+              }
+              const res = await fetchIfUncached(url.toString())
               return res.body
             }
             return filesByID.get(id).code
