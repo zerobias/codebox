@@ -1,0 +1,28 @@
+service: codebox-rollup
+
+package:
+  exclude:
+    - package.json
+    - package-lock.json
+    - node_modules/**
+    - schema.graphql
+    - yarn.lock
+    - tsconfig.json
+    - mapping-templates/**
+    - tests/**
+provider:
+  name: aws
+  runtime: nodejs10.x
+  memorySize: 512
+  timeout: 60
+  region: eu-west-1
+  logs:
+    restApi: true
+functions:
+  rollup:
+    handler: dist/lambda.default
+    events:
+      - http:
+          path: /rollup
+          method: post
+          cors: true
