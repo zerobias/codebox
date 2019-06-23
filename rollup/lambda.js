@@ -13,10 +13,14 @@ export default task({
   name: 'rollup',
   async fn(bodyRaw, event, context) {
     console.log('start rollup request')
-    const body = Object.assign({}, {
-      files: [],
-      entry: 'repl.js',
-    }, bodyRaw)
+    const body = Object.assign(
+      {},
+      {
+        files: [],
+        entry: 'repl.js',
+      },
+      bodyRaw,
+    )
     const files = body.files
     const filesByID = new Map()
     const urlsByID = new Map()
@@ -25,15 +29,25 @@ export default task({
     }
     function fetchIfUncached(url) {
       if (!urlsByID.has(url)) {
-        urlsByID.set(url, fetch(url)
-          .then(r => r.text())
+        const promise = fetch(url)
+          .then(async r => {
+            if (r.ok) {
+              return {
+                url: r.url,
+                body: await r.text(),
+              }
+            }
+
+            throw new Error(await r.text())
+          })
           .catch(err => {
-            console.error(err);
-            urlsByID.delete(url);
-            throw err;
-          }));
+            urlsByID.delete(url)
+            console.error(err)
+            throw err
+          })
+        urlsByID.set(url, promise)
       }
-      return urlsByID.get(url);
+      return urlsByID.get(url)
     }
     console.log('init rollup')
     const build = await rollup({
@@ -41,30 +55,48 @@ export default task({
       plugins: [
         {
           resolveId(importee, importer) {
-            if (!importer) return importee;
+            if (!importer) return importee
             console.log({
               importee,
               importer,
               "importee[0] !== '.'": importee[0] !== '.',
               'dirname(importer)': dirname(importer),
-              'resolve(dirname(importer), importee)': resolve(dirname(importer), importee),
-              "resolve(dirname(importer), importee).replace(/^\.\//, '')": resolve(dirname(importer), importee).replace(/^\.\//, ''),
+              'join(dirname(importer), importee)': join(
+                dirname(importer),
+                importee,
+              ),
+              "join(dirname(importer), importee).replace(/^.//, '')": join(
+                dirname(importer),
+                importee,
+              ).replace(/^\.\//, ''),
             })
-            if (importee[0] !== '.') return false;
+            // importing from a URL
+            if (importee.startsWith('http:') || importee.startsWith('https:'))
+              return importee
 
-            const resolved = resolve(dirname(importer), importee).replace(/^\.\//, '');
-            if (filesByID.has(resolved)) return resolved;
-            const resolvedJS = `${resolved}.js`;
-            if (filesByID.has(resolvedJS)) return resolvedJS;
-            const resolvedJSON = `${resolved}.json`;
-            if (filesByID.has(resolvedJSON)) return resolvedJSON;
-            throw new Error(`Could not resolve '${importee}' from '${importer}'`);
+            if (importee[0] !== '.') return false
+
+            const resolved = join(dirname(importer), importee).replace(
+              /^\.\//,
+              '',
+            )
+            if (filesByID.has(resolved)) return resolved
+            const resolvedJS = `${resolved}.js`
+            if (filesByID.has(resolvedJS)) return resolvedJS
+            const resolvedJSON = `${resolved}.json`
+            if (filesByID.has(resolvedJSON)) return resolvedJSON
+            throw new Error(
+              `Could not resolve '${importee}' from '${importer}'`,
+            )
           },
-          load(id) {
-            if (id.startsWith(`https://`) || id.startsWith(`http://`)) return fetchIfUncached(id);
-            return filesByID.get(id).code;
-          }
-				},
+          async load(id) {
+            if (id.startsWith('https:') || id.startsWith('http:')) {
+              const res = await fetchIfUncached(id)
+              return res.body
+            }
+            return filesByID.get(id).code
+          },
+        },
         // jsonPlugin,
         // babelPlugin,
       ],
