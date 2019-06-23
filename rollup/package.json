@@ -5,7 +5,8 @@
   "author": "Dmitry <ribkatt@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "parcel-bundler": "^1.12.3"
+    "parcel-bundler": "^1.12.3",
+    "serverless": "^1.45.1"
   },
   "dependencies": {
     "@babel/core": "^7.2.2",
