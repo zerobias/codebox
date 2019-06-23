@@ -1,5 +1,5 @@
 console.log('init rollup service')
-import {resolve, dirname} from 'path'
+import {join, resolve, dirname} from 'path'
 import {rollup} from 'rollup'
 // import babel from 'rollup-plugin-babel'
 import fetch from 'cross-fetch'
