@@ -1,5 +1,5 @@
 console.log('init rollup service')
-import {join, resolve, dirname} from 'path'
+import {extname, join, resolve, dirname} from 'path'
 import {rollup} from 'rollup'
 // import babel from 'rollup-plugin-babel'
 import fetch from 'cross-fetch'
@@ -73,6 +73,16 @@ export default task({
             // importing from a URL
             if (importee.startsWith('http:') || importee.startsWith('https:'))
               return importee
+            
+            if (importer.startsWith('http:') || importer.startsWith('https:')) {
+              const importerURL = new URL(importer)
+              const base =
+                extname(importerURL.pathname) === ''
+                  ? importerURL.pathname + '/'
+                  : importerURL.pathname
+              const url = new URL(importee, new URL(base, importerURL.origin))
+              return url.toString()
+            }
 
             if (importee[0] !== '.') return false
 
