@@ -38,14 +38,52 @@ declare export type Gate<Props = {||}> = Class<Component<Props, {||}>> & {|
   childGate<Next>(childName?: string): Gate<Next>,
 |}
 
+declare export type StoreView<State, Props = {||}> = ComponentType<Props> & {|
+  mounted: Event<{|
+    props: Props,
+    state: State,
+  |}>,
+  unmounted: Event<{|
+    props: Props,
+    state: State,
+  |}>,
+|}
+
 declare export function useStore<State>(store: Store<State>): State
 declare export function useGate<Props>(Gate: Gate<Props>, props?: Props): void
 
 declare export function createGate<Props>(name?: string): Gate<Props>
+
+declare export function createComponent<
+  Props,
+  Shape: {+[key: string]: Store<any> | any, ...},
+>(
+  store: Shape,
+  view: (
+    props: Props,
+    state: $ObjMap<
+      Shape,
+      //prettier-ignore
+      <S>(field: Store<S> | S) => S,
+    >,
+  ) => Node,
+): StoreView<
+  $ObjMap<
+    Shape,
+    //prettier-ignore
+    <S>(field: Store<S> | S) => S,
+  >,
+  Props,
+>
+declare export function createComponent<Props, State>(
+  storeFactory: (initialProps: Props) => Store<State>,
+  view: (props: Props, state: State) => Node,
+): StoreView<State, Props>
 declare export function createComponent<Props, State>(
   store: Store<State>,
   view: (props: Props, state: State) => Node,
-): ComponentType<Props>
+): StoreView<State, Props>
+
 declare export function createContextComponent<Props, State, Context>(
   store: Store<State>,
   context: ContextType<Context>,
@@ -109,14 +147,53 @@ declare type Gate<Props = {||}> = Class<React$Component<Props, {||}>> & {|
   childGate<Next>(childName?: string): Gate<Next>,
 |}
 
+declare type StoreView<State, Props = {||}> = React$ComponentType<Props> & {|
+  mounted: Effector_Event<{|
+    props: Props,
+    state: State,
+  |}>,
+  unmounted: Effector_Event<{|
+    props: Props,
+    state: State,
+  |}>,
+|}
+
 declare function useStore<State>(store: Store<State>): State
 declare function useGate<Props>(Gate: Gate<Props>, props?: Props): void
 
 declare function createGate<Props>(name?: string): Gate<Props>
+
+declare function createComponent<
+  Props,
+  Shape: {+[key: string]: Store<any> | any, ...},
+>(
+  store: Shape,
+  view: (
+    props: Props,
+    state: $ObjMap<
+      Shape,
+      //prettier-ignore
+      <S>(field: Store<S> | S) => S,
+    >,
+  ) => React$Node,
+): StoreView<
+  $ObjMap<
+    Shape,
+    //prettier-ignore
+    <S>(field: Store<S> | S) => S,
+  >,
+  Props,
+>
+declare function createComponent<Props, State>(
+  storeFactory: (initialProps: Props) => Store<State>,
+  view: (props: Props, state: State) => React$Node,
+): StoreView<State, Props>
 declare function createComponent<Props, State>(
   store: Store<State>,
   view: (props: Props, state: State) => React$Node,
-): React$ComponentType<Props>
+): StoreView<State, Props>
+
+
 declare function createContextComponent<Props, State, Context>(
   store: Store<State>,
   context: React$Context<Context>,
