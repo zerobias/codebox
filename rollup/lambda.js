@@ -30,6 +30,7 @@ export default task({
           .catch(err => {
             console.error(err);
             urlsByID.delete(url);
+            throw err;
           }));
       }
       return urlsByID.get(url);
