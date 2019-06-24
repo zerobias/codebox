@@ -6,7 +6,10 @@ phases:
       nodejs: 10
     commands:
       - cd rollup
-      - yarn
+      - yarn install
+        --pure-lockfile
+        --ignore-scripts
+        --ignore-optional
       - cd ..
   build:
     commands:
@@ -26,4 +29,4 @@ phases:
         --ignore-optional
         --no-bin-links
         --modules-folder ./src/rollupDeps/nodejs/node_modules
-      - npx sls deploy
+      - npx sls deploy --force
