@@ -21,8 +21,14 @@ provider:
 functions:
   rollup:
     handler: dist/lambda.default
+    layers:
+      - {Ref: RollupDepsLambdaLayer}
     events:
       - http:
           path: /rollup
           method: post
           cors: true
+layers:
+  rollupDeps:
+    compatibleRuntimes:
+      - nodejs10.x

@@ -15,9 +15,15 @@ phases:
         --no-cache
         --no-minify
         --no-source-maps
-        --bundle-node-modules
         -t node
         -d ./dist
         -o lambda.js
         src/lambda.js
+      - yarn install
+        --prod
+        --pure-lockfile
+        --ignore-scripts
+        --ignore-optional
+        --no-bin-links
+        --modules-folder ./src/rollupDeps/nodejs/node_modules
       - npx sls deploy
