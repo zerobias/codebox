@@ -3,13 +3,11 @@ service: codebox-rollup
 package:
   exclude:
     - package.json
-    - package-lock.json
     - node_modules/**
-    - schema.graphql
     - yarn.lock
-    - tsconfig.json
-    - mapping-templates/**
-    - tests/**
+    - jest.config.js
+    - buildspec.yml
+    - babel.config.js
 provider:
   name: aws
   runtime: nodejs10.x
