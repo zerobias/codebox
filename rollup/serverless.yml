@@ -13,8 +13,8 @@ package:
 provider:
   name: aws
   runtime: nodejs10.x
-  memorySize: 512
-  timeout: 60
+  memorySize: 1024
+  timeout: 30
   region: eu-west-1
   logs:
     restApi: true
