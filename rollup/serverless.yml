@@ -19,7 +19,7 @@ provider:
   logs:
     restApi: true
   environment:
-    NODE_PATH: './:/opt/node_modules'
+    NODE_PATH: './:/opt/nodejs/node_modules'
 functions:
   rollup:
     handler: dist/lambda.default

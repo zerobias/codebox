@@ -29,5 +29,5 @@ phases:
         --ignore-optional
         --no-bin-links
         --modules-folder ./src/rollupDeps/nodejs/node_modules
-      - zip -qr rollupDeps.zip ./src/rollupDeps
+      - cd src/rollupDeps && zip -qr ../../rollupDeps.zip . && cd ../..
       - npx sls deploy --force
