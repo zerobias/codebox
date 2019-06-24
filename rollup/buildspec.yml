@@ -1,0 +1,14 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 10
+    commands:
+      - cd rollup
+      - yarn
+      - cd ..
+  build:
+    commands:
+      - cd rollup
+      - npx sls deploy
