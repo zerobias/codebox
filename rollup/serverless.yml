@@ -30,5 +30,7 @@ functions:
           cors: true
 layers:
   rollupDeps:
+    path: src/rollupDeps
+    description: Runtime deps for codebox rollup lambda
     compatibleRuntimes:
       - nodejs10.x
