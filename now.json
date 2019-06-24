@@ -1,9 +1,7 @@
 {
   "name": "prettier-now",
   "version": 2,
-  "alias": [
-    "codebox"
-  ],
+  "alias": ["codebox"],
   "github": {
     "autoAlias": true,
     "enabled": true
@@ -16,51 +14,43 @@
     {
       "src": "type-at-pos/index.js",
       "use": "@now/node",
-      "config": { "maxLambdaSize": "30mb" }
+      "config": {"maxLambdaSize": "30mb"}
     },
     {
       "src": "flow/index.js",
       "use": "@now/node",
-      "config": { "maxLambdaSize": "30mb" }
+      "config": {"maxLambdaSize": "30mb"}
     },
     {
       "src": "babel/index.js",
       "use": "@now/node",
-      "config": { "maxLambdaSize": "30mb" }
+      "config": {"maxLambdaSize": "30mb"}
     },
     {
       "src": "terser/index.js",
       "use": "@now/node",
-      "config": { "maxLambdaSize": "30mb" }
+      "config": {"maxLambdaSize": "30mb"}
     }
   ],
   "routes": [
     {
       "src": "/type-at-pos",
-      "methods": [
-        "POST"
-      ],
+      "methods": ["POST"],
       "dest": "/type-at-pos/index.js"
     },
     {
       "src": "/flow",
-      "methods": [
-        "POST"
-      ],
+      "methods": ["POST"],
       "dest": "/flow/index.js"
     },
     {
       "src": "/terser",
-      "methods": [
-        "POST"
-      ],
+      "methods": ["POST"],
       "dest": "/terser/index.js"
     },
     {
       "src": "/babel",
-      "methods": [
-        "POST"
-      ],
+      "methods": ["POST"],
       "dest": "/babel/index.js"
     },
     {
