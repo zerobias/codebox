@@ -58,7 +58,7 @@ export default task({
       input: body.entry,
       plugins: [
         {
-          resolveId(importee, importer) {
+          async resolveId(importee, importer) {
             if (!importer) return importee
             log({
               importee,
