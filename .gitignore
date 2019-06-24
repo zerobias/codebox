@@ -1,5 +1,6 @@
 .serverless
 .DS_Store
+*.zip
 
 # Logs
 logs

@@ -8,6 +8,8 @@ package:
     - jest.config.js
     - buildspec.yml
     - babel.config.js
+    - src/rollupDeps/**
+    - rollupDeps.zip
 provider:
   name: aws
   runtime: nodejs10.x
