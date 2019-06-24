@@ -11,4 +11,12 @@ phases:
   build:
     commands:
       - cd rollup
+      - npx parcel build
+        --no-cache
+        --no-minify
+        --no-source-maps
+        --bundle-node-modules
+        -t node
+        -d ./dist
+        -o lambda.js lambda.js
       - npx sls deploy
