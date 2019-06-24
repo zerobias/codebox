@@ -1,4 +1,4 @@
-console.log('init rollup service')
+log('init rollup service')
 import {extname, join, resolve, dirname} from 'path'
 import {rollup} from 'rollup'
 // import babel from 'rollup-plugin-babel'
@@ -12,7 +12,7 @@ import {task, send} from '../lib/lambdaTask'
 export default task({
   name: 'rollup',
   async fn(bodyRaw, event, context) {
-    console.log('start rollup request')
+    log('start rollup request')
     const body = Object.assign(
       {},
       {
@@ -53,14 +53,14 @@ export default task({
       const res = await fetchIfUncached(url)
       return res.url
     }
-    console.log('init rollup')
+    log('init rollup')
     const build = await rollup({
       input: body.entry,
       plugins: [
         {
           resolveId(importee, importer) {
             if (!importer) return importee
-            console.log({
+            log({
               importee,
               importer,
               "importee[0] !== '.'": importee[0] !== '.',
@@ -79,7 +79,8 @@ export default task({
               return importee
 
             if (importer.startsWith('http:') || importer.startsWith('https:')) {
-              const url = new URL(importee, await followRedirects(importer)).href
+              const url = new URL(importee, await followRedirects(importer))
+                .href
               return await followRedirects(url)
             }
 
@@ -114,15 +115,19 @@ export default task({
         // babelPlugin,
       ],
     })
-    console.log('generate bundle')
+    log('generate bundle')
     const generated = await build.generate({
       format: 'umd',
       name: 'myBundle',
       globals: {},
     })
-    console.log('generated', generated)
+    log('generated', generated)
     return send(200, {
       code: generated,
     })
   },
 })
+
+function log(...args) {
+  console.log(...args.map(x => JSON.stringify(x)))
+}
