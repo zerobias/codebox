@@ -16,6 +16,8 @@ provider:
   region: eu-west-1
   logs:
     restApi: true
+  environment:
+    NODE_PATH: './:/opt/node_modules'
 functions:
   rollup:
     handler: dist/lambda.default
@@ -28,7 +30,9 @@ functions:
           cors: true
 layers:
   rollupDeps:
-    path: src/rollupDeps
+    name: rollupDeps
+    package:
+      artifact: rollupDeps.zip
     description: Runtime deps for codebox rollup lambda
     compatibleRuntimes:
       - nodejs10.x
