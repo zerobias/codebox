@@ -4,7 +4,7 @@ import {rollup} from 'rollup'
 // import babel from 'rollup-plugin-babel'
 import fetch from 'cross-fetch'
 
-import {task, send} from '../lib/lambdaTask'
+import {task, send} from '../../lib/lambdaTask'
 // import babelConfig from './defaultBabelConfig'
 
 // const babelPlugin = babel(babelConfig)

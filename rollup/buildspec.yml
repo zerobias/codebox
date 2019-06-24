@@ -18,5 +18,6 @@ phases:
         --bundle-node-modules
         -t node
         -d ./dist
-        -o lambda.js lambda.js
+        -o lambda.js
+        src/lambda.js
       - npx sls deploy
