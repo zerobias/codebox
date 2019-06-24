@@ -63,7 +63,7 @@
     },
     {
       "src": "/rollup",
-      "dest": "https://qwjv2frddh.execute-api.eu-west-1.amazonaws.com/prod/codebox-rollup"
+      "dest": "https://cfmumq7du7.execute-api.eu-west-1.amazonaws.com/dev/rollup"
     },
     {
       "src": "/prettier",
