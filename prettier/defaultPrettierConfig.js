@@ -4,6 +4,6 @@ export default {
   semi: false,
   singleQuote: true,
   bracketSpacing: false,
-  arrowParens: 'always',
+  arrowParens: 'avoid',
   parser: 'babel',
 }
