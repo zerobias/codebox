@@ -102,10 +102,18 @@ export default task({
           async load(id) {
             if (id.startsWith('https:') || id.startsWith('http:')) {
               const url = new URL(id)
+              let hasModuleParam = true
               if (!url.searchParams.has('module')) {
+                hasModuleParam = false
                 url.searchParams.set('module', '')
               }
               const res = await fetchIfUncached(url.toString())
+                .catch(err => {
+                  if (hasModuleParam) return Promse.reject(err)
+                  const url = new URL(id)
+                  return fetchIfUncached(url.toString())
+                    .catch(() => Promse.reject(err))
+                })
               return res.body
             }
             return filesByID.get(id).code
