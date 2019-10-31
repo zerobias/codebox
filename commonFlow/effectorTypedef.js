@@ -576,7 +576,9 @@ declare export function combine<A, B, C, D, E, F, G, H, I, J, K, R>(
 }
 
 `
+
 export const effectorGlobal = ''
+
 const effectorGlobalBroken = `
 
 declare var version: string
