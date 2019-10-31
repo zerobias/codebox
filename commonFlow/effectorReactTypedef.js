@@ -146,21 +146,21 @@ declare type StoreComponent<State> = React$ComponentType<{|
 declare type Gate<Props = {||}> = Class<React$Component<Props, {||}>> & {|
   isOpen: boolean,
   isTerminated: boolean,
-  open: Effector_Event<void>,
-  close: Effector_Event<void>,
+  open: Event<void>,
+  close: Event<void>,
   status: Store<boolean>,
-  destructor: Effector_Event<void>,
+  destructor: Event<void>,
   current: Props,
   state: Store<Props>,
   childGate<Next>(childName?: string): Gate<Next>,
 |}
 
 declare type StoreView<State, Props = {||}> = React$ComponentType<Props> & {|
-  mounted: Effector_Event<{|
+  mounted: Event<{|
     props: Props,
     state: State,
   |}>,
-  unmounted: Effector_Event<{|
+  unmounted: Event<{|
     props: Props,
     state: State,
   |}>,

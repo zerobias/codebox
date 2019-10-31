@@ -626,22 +626,22 @@ declare type CompositeName = {|
   path: Array<string>,
 |}
 
-declare class Effector_Event<Payload> implements Unit<Payload> {
+declare class Event<Payload> implements Unit<Payload> {
   (payload: Payload): Payload;
   +kind: kind;
   watch(watcher: (payload: Payload) => any): Subscription;
-  map<T>(fn: (payload: Payload) => T): Effector_Event<T>;
+  map<T>(fn: (payload: Payload) => T): Event<T>;
   filter(config: {|
     fn(payload: Payload): boolean,
-  |}): Effector_Event<Payload>;
+  |}): Event<Payload>;
   /**
    * @deprecated This form is deprecated, use \`filterMap\` method instead.
    */
-  filter<T>(fn: (payload: Payload) => T | void): Effector_Event<T>;
-  filterMap<T>(fn: (payload: Payload) => T | void): Effector_Event<T>;
-  prepend<Before>(fn: (_: Before) => Payload): Effector_Event<Before>;
+  filter<T>(fn: (payload: Payload) => T | void): Event<T>;
+  filterMap<T>(fn: (payload: Payload) => T | void): Event<T>;
+  prepend<Before>(fn: (_: Before) => Payload): Event<Before>;
   subscribe(observer: Observer<Payload>): Subscription;
-  thru<U>(fn: (event: Effector_Event<Payload>) => U): U;
+  thru<U>(fn: (event: Event<Payload>) => U): U;
   getType(): string;
   domainName?: CompositeName;
   compositeName: CompositeName;
@@ -653,15 +653,15 @@ declare class Effect<Params, Done, Fail = Error>
   implements Unit<Params> {
   (payload: Params): Promise<Done>;
   +kind: kind;
-  +done: Effector_Event<{|
+  +done: Event<{|
     +params: Params,
     +result: Done,
   |}>;
-  +fail: Effector_Event<{|
+  +fail: Event<{|
     +params: Params,
     +error: Fail,
   |}>;
-  +finally: Effector_Event<
+  +finally: Event<
     | {|
         +status: 'done',
         +params: Params,
@@ -679,8 +679,8 @@ declare class Effect<Params, Done, Fail = Error>
   |};
   pending: Store<boolean>;
   watch(watcher: (payload: Params) => any): Subscription;
-  prepend<Before>(fn: (_: Before) => Params): Effector_Event<Before>;
-  map<T>(fn: (params: Params) => T): Effector_Event<T>;
+  prepend<Before>(fn: (_: Before) => Params): Event<Before>;
+  map<T>(fn: (params: Params) => T): Event<T>;
   subscribe(observer: Observer<Params>): Subscription;
   getType(): string;
   domainName?: CompositeName;
@@ -701,7 +701,7 @@ declare class Store<State> implements Unit<State> {
   ): this;
   off(trigger: Unit<any>): void;
   subscribe(listener: (state: State) => any): Subscription;
-  +updates: Effector_Event<State>;
+  +updates: Event<State>;
   watch<E>(
     watcher: (state: State, payload: void) => any,
     _: void,
@@ -732,7 +732,7 @@ declare class InternalStore<State> extends Store<State> implements Unit<State> {
 
 declare class Domain {
   +kind: kind;
-  onCreateEvent(hook: (newEvent: Effector_Event<mixed>) => any): Subscription;
+  onCreateEvent(hook: (newEvent: Event<mixed>) => any): Subscription;
   onCreateEffect(
     hook: (newEffect: Effect<mixed, mixed, mixed>) => any,
   ): Subscription;
@@ -740,7 +740,7 @@ declare class Domain {
     hook: (newStore: InternalStore<mixed_non_void>) => any,
   ): Subscription;
   onCreateDomain(hook: (newDomain: Domain) => any): Subscription;
-  event<Payload>(name?: string): Effector_Event<Payload>;
+  event<Payload>(name?: string): Event<Payload>;
   effect<Params, Done, Fail>(
     name?: string,
     config?: {
@@ -761,7 +761,7 @@ declare class Domain {
     domains: $ReadOnlySet<Domain>,
     stores: $ReadOnlySet<Store<any>>,
     effects: $ReadOnlySet<Effect<any, any, any>>,
-    events: $ReadOnlySet<Effector_Event<any>>,
+    events: $ReadOnlySet<Event<any>>,
   };
 }
 declare type ID = string
@@ -853,7 +853,7 @@ declare function forward<T>(opts: {|
   +to: Unit<T>,
 |}): Subscription
 
-declare function merge<T>(events: $ReadOnlyArray<Unit<T>>): Effector_Event<T>
+declare function merge<T>(events: $ReadOnlyArray<Unit<T>>): Event<T>
 
 declare function clearNode(
   unit: Unit<any> | Step,
@@ -867,14 +867,14 @@ declare function createNode(opts: {|
 
 declare function launch<T>(unit: Unit<T>, payload: T): void
 
-declare function fromObservable<T>(observable: mixed): Effector_Event<T>
+declare function fromObservable<T>(observable: mixed): Event<T>
 
-declare function createEvent<E>(eventName?: string): Effector_Event<E>
+declare function createEvent<E>(eventName?: string): Event<E>
 declare function createEvent<E>(config: {
   name?: string,
   sid?: string,
   ...
-}): Effector_Event<E>
+}): Event<E>
 
 declare function createEffect<Params, Done, Fail>(
   effectName?: string,
@@ -917,7 +917,7 @@ declare function createApi<
 >(
   store: Store<S>,
   api: Api,
-): $ObjMap<Api, <E>(h: (store: S, e: E) => S) => Effector_Event<E>>
+): $ObjMap<Api, <E>(h: (store: S, e: E) => S) => Event<E>>
 declare function split<
   S,
   Obj: {
@@ -929,7 +929,7 @@ declare function split<
   cases: Obj,
 ): $ObjMap<
   {...Obj, __: (payload: S) => boolean, ...},
-  (h: (payload: S) => boolean) => Effector_Event<S>,
+  (h: (payload: S) => boolean) => Event<S>,
 >
 declare function restoreObject<
   State: {+[key: string]: Store<any> | any, ...},
@@ -947,7 +947,7 @@ declare function restoreEffect<Done>(
 ): Store<Done>
 
 declare function restoreEvent<E>(
-  event: Effector_Event<E>,
+  event: Event<E>,
   defaultState: E,
 ): Store<E>
 
@@ -955,7 +955,7 @@ declare function restore<Done>(
   effect: Effect<any, Done, any>,
   defaultState: Done,
 ): Store<Done>
-declare function restore<E>(event: Effector_Event<E>, defaultState: E): Store<E>
+declare function restore<E>(event: Event<E>, defaultState: E): Store<E>
 declare function restore<State: {+[key: string]: Store<any> | any, ...}>(
   state: State,
 ): $ObjMap<
@@ -987,13 +987,13 @@ declare function sample<A>(
   clock?: Store<any>,
 ): Store<A>
 declare function sample<A>(
-  source: Effector_Event<A> | Effect<A, any, any>,
+  source: Event<A> | Effect<A, any, any>,
   clock: Store<any>,
-): Effector_Event<A>
+): Event<A>
 declare function sample<A>(
-  source: Effector_Event<A> | Store<A> | Effect<A, any, any>,
-  clock: Effector_Event<any> | Effect<any, any, any>,
-): Effector_Event<A>
+  source: Event<A> | Store<A> | Effect<A, any, any>,
+  clock: Event<any> | Effect<any, any, any>,
+): Event<A>
 
 declare function sample<A, B, C>(
   source: Store<A>,
@@ -1001,20 +1001,20 @@ declare function sample<A, B, C>(
   fn: (source: A, clock: B) => C,
 ): Store<C>
 declare function sample<A, B, C>(
-  source: Effector_Event<A> | Effect<A, any, any>,
+  source: Event<A> | Effect<A, any, any>,
   clock: Store<B>,
   fn: (source: A, clock: B) => C,
-): Effector_Event<C>
+): Event<C>
 declare function sample<A, B, C>(
-  source: Effector_Event<A> | Store<A> | Effect<A, any, any>,
-  clock: Effector_Event<B> | Effect<B, any, any>,
+  source: Event<A> | Store<A> | Effect<A, any, any>,
+  clock: Event<B> | Effect<B, any, any>,
   fn: (source: A, clock: B) => C,
-): Effector_Event<C>
+): Event<C>
 
 declare function guard<A>(config: {|
   +source: Unit<A>,
   +filter: Store<boolean> | ((value: A) => boolean),
-|}): Effector_Event<A>
+|}): Event<A>
 
 declare function guard<A>(config: {|
   +source: Unit<A>,
@@ -1027,7 +1027,7 @@ declare function guard<A>(
   config: {|
     +filter: Store<boolean> | ((value: A) => boolean),
   |},
-): Effector_Event<A>
+): Event<A>
 
 declare function guard<A>(
   source: Unit<A>,
