@@ -17,11 +17,6 @@ declare export type StoreConsumer<State> = ComponentType<{|
   children: (state: State) => Node,
 |}>
 
-declare export type StoreProvider<State> = ComponentType<{|
-  value: State,
-  children?: Node,
-|}>
-
 declare export type StoreComponent<State> = ComponentType<{|
   children: (state: State) => Node,
 |}>
@@ -50,9 +45,31 @@ declare export type StoreView<State, Props = {||}> = ComponentType<Props> & {|
 |}
 
 declare export function useStore<State>(store: Store<State>): State
+declare export function useStoreMap<
+  State,
+  Result,
+  Keys: $ReadOnlyArray<any>,
+>(opts: {|
+  +store: Store<State>,
+  +keys: Keys,
+  fn(state: State, keys: Keys): Result,
+|}): Result
+declare export function useList<T>(
+  list: Store<T[]> | Store<$ReadOnlyArray<T>>,
+  renderItem:
+    | {|
+        +keys?: any[],
+        fn(item: T, index: number): Node,
+      |}
+    | ((item: T, index: number) => Node),
+): Node
 declare export function useGate<Props>(Gate: Gate<Props>, props?: Props): void
 
-declare export function createGate<Props>(name?: string): Gate<Props>
+declare export function createGate<Props: {...}>(name?: string): Gate<Props>
+declare export function createGate<Props>(
+  name: string,
+  defaultState: Props,
+): Gate<Props>
 
 declare export function createComponent<
   Props,
@@ -103,10 +120,6 @@ declare export function createStoreConsumer<State>(
   store: Store<State>,
 ): StoreConsumer<State>
 
-declare export function unstable_createStoreProvider<State>(
-  store: Store<State>,
-): StoreProvider<State>
-
 declare export function createReactState<
   State: {[key: string]: any, ...},
   Com: ComponentType<*>,
@@ -124,11 +137,6 @@ export const effectorReactGlobal = `
 
 declare type StoreConsumer<State> = React$ComponentType<{|
   children: (state: State) => React$Node,
-|}>
-
-declare type StoreProvider<State> = React$ComponentType<{|
-  value: State,
-  children?: React$Node,
 |}>
 
 declare type StoreComponent<State> = React$ComponentType<{|
@@ -159,9 +167,31 @@ declare type StoreView<State, Props = {||}> = React$ComponentType<Props> & {|
 |}
 
 declare function useStore<State>(store: Store<State>): State
+declare function useStoreMap<
+  State,
+  Result,
+  Keys: $ReadOnlyArray<any>,
+>(opts: {|
+  +store: Store<State>,
+  +keys: Keys,
+  fn(state: State, keys: Keys): Result,
+|}): Result
+declare function useList<T>(
+  list: Store<T[]> | Store<$ReadOnlyArray<T>>,
+  renderItem:
+    | {|
+        +keys?: any[],
+        fn(item: T, index: number): React$Node,
+      |}
+    | ((item: T, index: number) => React$Node),
+): React$Node
 declare function useGate<Props>(Gate: Gate<Props>, props?: Props): void
 
-declare function createGate<Props>(name?: string): Gate<Props>
+declare function createGate<Props: {...}>(name?: string): Gate<Props>
+declare function createGate<Props>(
+  name: string,
+  defaultState: Props,
+): Gate<Props>
 
 declare function createComponent<
   Props,
@@ -212,10 +242,6 @@ declare function connect<
 declare function createStoreConsumer<State>(
   store: Store<State>,
 ): StoreConsumer<State>
-
-declare function unstable_createStoreProvider<State>(
-  store: Store<State>,
-): StoreProvider<State>
 
 declare function createReactState<
   State: {[key: string]: any, ...},

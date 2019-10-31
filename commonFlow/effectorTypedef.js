@@ -18,7 +18,7 @@ declare export type mixed_non_void =
   | string
   | number
   | boolean
-  | {}
+  | {...}
   | $ReadOnlyArray<mixed>
 
 declare export var Kind: {|
@@ -35,9 +35,22 @@ declare export type Subscription = {
   unsubscribe(): void,
   ...
 }
-declare export interface Unit<T> {
+declare interface CovariantUnit<+T> {
   +kind: kind;
 }
+declare interface ContravariantUnit<-T> {
+  +kind: kind;
+}
+declare export interface Unit<T> extends CovariantUnit<T>, ContravariantUnit<T> {
+  +kind: kind;
+}
+
+declare export type CompositeName = {|
+  shortName: string,
+  fullName: string,
+  path: Array<string>,
+|}
+
 declare export class Event<Payload> implements Unit<Payload> {
   (payload: Payload): Payload;
   +kind: kind;
@@ -47,25 +60,23 @@ declare export class Event<Payload> implements Unit<Payload> {
     fn(payload: Payload): boolean,
   |}): Event<Payload>;
   /**
-  * @deprecated This form is deprecated, use \`filterMap\` method instead.
-  */
+   * @deprecated This form is deprecated, use \`filterMap\` method instead.
+   */
   filter<T>(fn: (payload: Payload) => T | void): Event<T>;
   filterMap<T>(fn: (payload: Payload) => T | void): Event<T>;
   prepend<Before>(fn: (_: Before) => Payload): Event<Before>;
   subscribe(observer: Observer<Payload>): Subscription;
   thru<U>(fn: (event: Event<Payload>) => U): U;
   getType(): string;
-}
-
-declare export class Future<Params, Done, Fail> extends Promise<Done> {
-  +args: Params;
-  anyway(): Promise<void>;
-  cache(): Done | void;
+  domainName?: CompositeName;
+  compositeName: CompositeName;
+  sid: string | null;
+  shortName: string;
 }
 
 declare export class Effect<Params, Done, Fail = Error>
   implements Unit<Params> {
-  (payload: Params): Future<Params, Done, Fail>;
+  (payload: Params): Promise<Done>;
   +kind: kind;
   +done: Event<{|
     +params: Params,
@@ -75,9 +86,18 @@ declare export class Effect<Params, Done, Fail = Error>
     +params: Params,
     +error: Fail,
   |}>;
-  +finally: Event<{|
-    params: Params,
-  |}>;
+  +finally: Event<
+    | {|
+        +status: 'done',
+        +params: Params,
+        +result: Done,
+      |}
+    | {|
+        +status: 'fail',
+        +params: Params,
+        +error: Fail,
+      |},
+  >;
   +use: {|
     (asyncFunction: (params: Params) => Promise<Done> | Done): this,
     getCurrent(): (params: Params) => Promise<Done>,
@@ -88,6 +108,10 @@ declare export class Effect<Params, Done, Fail = Error>
   map<T>(fn: (params: Params) => T): Event<T>;
   subscribe(observer: Observer<Params>): Subscription;
   getType(): string;
+  domainName?: CompositeName;
+  compositeName: CompositeName;
+  sid: string | null;
+  shortName: string;
 }
 
 declare export class Store<State> implements Unit<State> {
@@ -103,10 +127,6 @@ declare export class Store<State> implements Unit<State> {
   off(trigger: Unit<any>): void;
   subscribe(listener: (state: State) => any): Subscription;
   +updates: Event<State>;
-  +fail: Event<{|
-    error: mixed,
-    state: State,
-  |}>;
   watch<E>(
     watcher: (state: State, payload: void) => any,
     _: void,
@@ -116,30 +136,12 @@ declare export class Store<State> implements Unit<State> {
     watcher: (state: State, payload: E) => any,
   ): Subscription;
   thru<U>(fn: (store: Store<State>) => U): U;
-  shortName: string;
   defaultState: State;
+  domainName?: CompositeName;
+  compositeName: CompositeName;
+  sid: string | null;
+  shortName: string;
 }
-
-declare export function isUnit(obj: mixed): boolean %checks(typeof obj ===
-  'object' &&
-  obj !== null &&
-  (obj instanceof Event || obj instanceof Store || obj instanceof Effect))
-declare export function isStore(obj: mixed): boolean %checks(typeof obj ===
-  'object' &&
-  obj !== null &&
-  obj instanceof Store)
-declare export function isEvent(obj: mixed): boolean %checks(typeof obj ===
-  'object' &&
-  obj !== null &&
-  obj instanceof Event)
-declare export function isEffect(obj: mixed): boolean %checks(typeof obj ===
-  'object' &&
-  obj !== null &&
-  obj instanceof Effect)
-declare export function isDomain(obj: mixed): boolean %checks(typeof obj ===
-  'object' &&
-  obj !== null &&
-  obj instanceof Domain)
 
 declare export var is: {|
   unit(obj: mixed): boolean,
@@ -168,15 +170,24 @@ declare export class Domain {
     name?: string,
     config?: {
       handler?: (params: Params) => Promise<Done> | Done,
+      sid?: string,
       ...
     },
   ): Effect<Params, Done, Fail>;
   domain(name?: string): Domain;
   store<State>(
     defaultState: State,
-    config?: {name?: string, ...},
+    config?: {name?: string, sid?: string, ...},
   ): Store<State>;
+  sid: string | null;
+  shortName: string;
   getType(): string;
+  history: {
+    domains: $ReadOnlySet<Domain>,
+    stores: $ReadOnlySet<Store<any>>,
+    effects: $ReadOnlySet<Effect<any, any, any>>,
+    events: $ReadOnlySet<Event<any>>,
+  };
 }
 declare export type ID = string
 declare export type StateRef = {|
@@ -188,7 +199,6 @@ declare export type Cmd =
   | Update
   | Run
   | Filter
-  | Emit
   | Compute
   | Tap
   | Barrier
@@ -196,7 +206,6 @@ declare export type Cmd =
 declare export type Barrier = {|
   +id: ID,
   +type: 'barrier',
-  +group: 'cmd',
   +data: {|
     +barrierID: ID,
   |},
@@ -204,7 +213,6 @@ declare export type Barrier = {|
 declare export type Update = {|
   +id: ID,
   +type: 'update',
-  +group: 'cmd',
   +data: {|
     store: StateRef,
   |},
@@ -212,7 +220,6 @@ declare export type Update = {|
 declare export type Run = {|
   +id: ID,
   +type: 'run',
-  +group: 'cmd',
   +data: {|
     fn: (data: any, scope: {[field: string]: any, ...}) => any,
   |},
@@ -220,23 +227,13 @@ declare export type Run = {|
 declare export type Filter = {|
   +id: ID,
   +type: 'filter',
-  +group: 'cmd',
   +data: {|
     fn: (data: any, scope: {[field: string]: any, ...}) => boolean,
-  |},
-|}
-declare export type Emit = {|
-  +id: ID,
-  +type: 'emit',
-  +group: 'cmd',
-  +data: {|
-    fullName: string,
   |},
 |}
 declare export type Compute = {|
   +id: ID,
   +type: 'compute',
-  +group: 'cmd',
   +data: {|
     fn: (data: any, scope: {[field: string]: any, ...}) => any,
   |},
@@ -244,21 +241,22 @@ declare export type Compute = {|
 declare export type Tap = {|
   +id: ID,
   +type: 'tap',
-  +group: 'cmd',
   +data: {|
     fn: (data: any, scope: {[field: string]: any, ...}) => any,
   |},
 |}
 declare export type Step = /*::interface extends Unit<any>*/ {
-  +from: Array<Step>,
   +next: Array<Step>,
   +seq: Array<Cmd>,
   +scope: {[field: string]: any, ...},
+  +meta: Object,
+  +family: {|
+    +type: 'regular' | 'crosslink',
+    +links: Step[],
+    +owners: Step[],
+  |},
 }
 declare export var step: {|
-  emit(data: {|
-    fullName: string,
-  |}): Emit,
   compute(data: {|
     fn: (data: any, scope: {[field: string]: any, ...}) => any,
   |}): Compute,
@@ -276,7 +274,7 @@ declare export var step: {|
   |}): Run,
 |}
 declare export function forward<T>(opts: {|
-  +from: Unit<T>,
+  +from: CovariantUnit<T>,
   +to: Unit<T>,
 |}): Subscription
 
@@ -289,7 +287,6 @@ declare export function clearNode(
 declare export function createNode(opts: {|
   +node: Array<Cmd>,
   +child?: Array<Unit<any> | Step>,
-  +from?: Array<Unit<any> | Step>,
   +scope?: {[field: string]: any, ...},
 |}): Step
 
@@ -298,18 +295,30 @@ declare export function launch<T>(unit: Unit<T>, payload: T): void
 declare export function fromObservable<T>(observable: mixed): Event<T>
 
 declare export function createEvent<E>(eventName?: string): Event<E>
+declare export function createEvent<E>(config: {
+  name?: string,
+  sid?: string,
+  ...
+}): Event<E>
 
 declare export function createEffect<Params, Done, Fail>(
   effectName?: string,
   config?: {
     handler?: (params: Params) => Promise<Done> | Done,
+    sid?: string,
     ...
   },
 ): Effect<Params, Done, Fail>
+declare export function createEffect<Params, Done, Fail>(config: {
+  name?: string,
+  handler?: (params: Params) => Promise<Done> | Done,
+  sid?: string,
+  ...
+}): Effect<Params, Done, Fail>
 
 declare export function createStore<State>(
   defaultState: State,
-  config?: {name?: string, ...},
+  config?: {name?: string, sid?: string, ...},
 ): Store<State>
 declare export function setStoreName<State>(
   store: Store<State>,
@@ -327,19 +336,6 @@ declare export function createStoreObject<
     <S>(field: Store<S> | S) => S,
   >,
 >
-declare export function extract<
-  State: {+[key: string]: Store<any> | any, ...},
-  NextState: {+[key: string]: Store<any> | any, ...},
->(
-  store: Store<State>,
-  extractor: (_: State) => NextState,
-): Store<
-  $ObjMap<
-    NextState,
-    //prettier-ignore
-    <S>(field: Store<S> | S) => S,
-  >,
->
 declare export function createApi<
   S,
   Api: {+[name: string]: (store: S, e: any) => S, ...},
@@ -347,6 +343,19 @@ declare export function createApi<
   store: Store<S>,
   api: Api,
 ): $ObjMap<Api, <E>(h: (store: S, e: E) => S) => Event<E>>
+declare export function split<
+  S,
+  Obj: {
+    +[name: string]: (payload: S) => boolean,
+    ...,
+  },
+>(
+  source: Unit<S>,
+  cases: Obj,
+): $ObjMap<
+  {...Obj, __: (payload: S) => boolean, ...},
+  (h: (payload: S) => boolean) => Event<S>,
+>
 declare export function restoreObject<
   State: {+[key: string]: Store<any> | any, ...},
 >(
@@ -384,13 +393,19 @@ declare export function createDomain(domainName?: string): Domain
 declare export function sample<A>(config: {|
   +source: Unit<A>,
   +clock: Unit<any>,
-  +target?: Unit<A>,
+  +name?: string,
 |}): Unit<A>
+declare export function sample<A, U: Unit<A>>(config: {|
+  +source: Unit<A>,
+  +clock: Unit<any>,
+  +target: U,
+|}): U
 declare export function sample<A, B, C>(config: {|
   +source: Unit<A>,
   +clock: Unit<B>,
   +target?: Unit<C>,
   fn(source: A, clock: B): C,
+  +name?: string,
 |}): Unit<C>
 declare export function sample<A>(
   source: Store<A>,
@@ -414,26 +429,54 @@ declare export function sample<A, B, C>(
   source: Event<A> | Effect<A, any, any>,
   clock: Store<B>,
   fn: (source: A, clock: B) => C,
-): Event<A>
+): Event<C>
 declare export function sample<A, B, C>(
   source: Event<A> | Store<A> | Effect<A, any, any>,
   clock: Event<B> | Effect<B, any, any>,
   fn: (source: A, clock: B) => C,
 ): Event<C>
 
-declare export function invariant(
-  condition: boolean,
-  format: string,
-  ...args: mixed[]
-): void
-declare export function warning(
-  condition: boolean,
-  format: string,
-  ...args: mixed[]
-): void
+declare export function guard<A>(config: {|
+  +source: Unit<A>,
+  +filter: Store<boolean> | ((value: A) => boolean),
+|}): Event<A>
 
-declare export function combine<R>(fn: () => R): Store<R>
+declare export function guard<A>(config: {|
+  +source: Unit<A>,
+  +filter: Store<boolean> | ((value: A) => boolean),
+  +target: Unit<A>,
+|}): Unit<A>
+
+declare export function guard<A>(
+  source: Unit<A>,
+  config: {|
+    +filter: Store<boolean> | ((value: A) => boolean),
+  |},
+): Event<A>
+
+declare export function guard<A>(
+  source: Unit<A>,
+  config: {|
+    +filter: Store<boolean> | ((value: A) => boolean),
+    +target: Unit<A>,
+  |},
+): Unit<A>
+
+declare export function combine<State: {+[key: string]: Store<any> | any, ...}>(
+  shape: State,
+): Store<$ObjMap<State, <S>(field: Store<S> | S) => S>>
+declare export function combine<State: $ReadOnlyArray<Store<any> | any>>(
+  list: State,
+): Store<$TupleMap<State, <S>(field: Store<S> | S) => S>>
 declare export function combine<A, R>(a: Store<A>, fn: (a: A) => R): Store<R>
+declare export function combine<State: {+[key: string]: Store<any> | any, ...}, R>(
+  shape: State,
+  fn: (shape: $ObjMap<State, <S>(field: Store<S> | S) => S>) => R,
+): Store<R>
+declare export function combine<State: $ReadOnlyArray<Store<any> | any>, R>(
+  list: State,
+  fn: (list: $TupleMap<State, <S>(field: Store<S> | S) => S>) => R,
+): Store<R>
 declare export function combine<A, B, R>(
   a: Store<A>,
   b: Store<B>,
@@ -550,7 +593,7 @@ declare type mixed_non_void =
   | string
   | number
   | boolean
-  | {}
+  | {...}
   | $ReadOnlyArray<mixed>
 
 declare var Kind: {|
@@ -567,9 +610,22 @@ declare type Subscription = {
   unsubscribe(): void,
   ...
 }
-declare interface Unit<T> {
+declare interface CovariantUnit<+T> {
   +kind: kind;
 }
+declare interface ContravariantUnit<-T> {
+  +kind: kind;
+}
+declare interface Unit<T> extends CovariantUnit<T>, ContravariantUnit<T> {
+  +kind: kind;
+}
+
+declare type CompositeName = {|
+  shortName: string,
+  fullName: string,
+  path: Array<string>,
+|}
+
 declare class Effector_Event<Payload> implements Unit<Payload> {
   (payload: Payload): Payload;
   +kind: kind;
@@ -587,17 +643,15 @@ declare class Effector_Event<Payload> implements Unit<Payload> {
   subscribe(observer: Observer<Payload>): Subscription;
   thru<U>(fn: (event: Effector_Event<Payload>) => U): U;
   getType(): string;
-}
-
-declare class Future<Params, Done, Fail> extends Promise<Done> {
-  +args: Params;
-  anyway(): Promise<void>;
-  cache(): Done | void;
+  domainName?: CompositeName;
+  compositeName: CompositeName;
+  sid: string | null;
+  shortName: string;
 }
 
 declare class Effect<Params, Done, Fail = Error>
   implements Unit<Params> {
-  (payload: Params): Future<Params, Done, Fail>;
+  (payload: Params): Promise<Done>;
   +kind: kind;
   +done: Effector_Event<{|
     +params: Params,
@@ -607,9 +661,18 @@ declare class Effect<Params, Done, Fail = Error>
     +params: Params,
     +error: Fail,
   |}>;
-  +finally: Effector_Event<{|
-    params: Params,
-  |}>;
+  +finally: Effector_Event<
+    | {|
+        +status: 'done',
+        +params: Params,
+        +result: Done,
+      |}
+    | {|
+        +status: 'fail',
+        +params: Params,
+        +error: Fail,
+      |},
+  >;
   +use: {|
     (asyncFunction: (params: Params) => Promise<Done> | Done): this,
     getCurrent(): (params: Params) => Promise<Done>,
@@ -620,6 +683,10 @@ declare class Effect<Params, Done, Fail = Error>
   map<T>(fn: (params: Params) => T): Effector_Event<T>;
   subscribe(observer: Observer<Params>): Subscription;
   getType(): string;
+  domainName?: CompositeName;
+  compositeName: CompositeName;
+  sid: string | null;
+  shortName: string;
 }
 
 declare class Store<State> implements Unit<State> {
@@ -635,10 +702,6 @@ declare class Store<State> implements Unit<State> {
   off(trigger: Unit<any>): void;
   subscribe(listener: (state: State) => any): Subscription;
   +updates: Effector_Event<State>;
-  +fail: Effector_Event<{|
-    error: mixed,
-    state: State,
-  |}>;
   watch<E>(
     watcher: (state: State, payload: void) => any,
     _: void,
@@ -648,30 +711,12 @@ declare class Store<State> implements Unit<State> {
     watcher: (state: State, payload: E) => any,
   ): Subscription;
   thru<U>(fn: (store: Store<State>) => U): U;
-  shortName: string;
   defaultState: State;
+  domainName?: CompositeName;
+  compositeName: CompositeName;
+  sid: string | null;
+  shortName: string;
 }
-
-declare function isUnit(obj: mixed): boolean %checks(typeof obj ===
-  'object' &&
-  obj !== null &&
-  (obj instanceof Effector_Event || obj instanceof Store || obj instanceof Effect))
-declare function isStore(obj: mixed): boolean %checks(typeof obj ===
-  'object' &&
-  obj !== null &&
-  obj instanceof Store)
-declare function isEvent(obj: mixed): boolean %checks(typeof obj ===
-  'object' &&
-  obj !== null &&
-  obj instanceof Effector_Event)
-declare function isEffect(obj: mixed): boolean %checks(typeof obj ===
-  'object' &&
-  obj !== null &&
-  obj instanceof Effect)
-declare function isDomain(obj: mixed): boolean %checks(typeof obj ===
-  'object' &&
-  obj !== null &&
-  obj instanceof Domain)
 
 declare var is: {|
   unit(obj: mixed): boolean,
@@ -700,15 +745,24 @@ declare class Domain {
     name?: string,
     config?: {
       handler?: (params: Params) => Promise<Done> | Done,
+      sid?: string,
       ...
     },
   ): Effect<Params, Done, Fail>;
   domain(name?: string): Domain;
   store<State>(
     defaultState: State,
-    config?: {name?: string, ...},
+    config?: {name?: string, sid?: string, ...},
   ): Store<State>;
+  sid: string | null;
+  shortName: string;
   getType(): string;
+  history: {
+    domains: $ReadOnlySet<Domain>,
+    stores: $ReadOnlySet<Store<any>>,
+    effects: $ReadOnlySet<Effect<any, any, any>>,
+    events: $ReadOnlySet<Effector_Event<any>>,
+  };
 }
 declare type ID = string
 declare type StateRef = {|
@@ -720,7 +774,6 @@ declare type Cmd =
   | Update
   | Run
   | Filter
-  | Emit
   | Compute
   | Tap
   | Barrier
@@ -728,7 +781,6 @@ declare type Cmd =
 declare type Barrier = {|
   +id: ID,
   +type: 'barrier',
-  +group: 'cmd',
   +data: {|
     +barrierID: ID,
   |},
@@ -736,7 +788,6 @@ declare type Barrier = {|
 declare type Update = {|
   +id: ID,
   +type: 'update',
-  +group: 'cmd',
   +data: {|
     store: StateRef,
   |},
@@ -744,7 +795,6 @@ declare type Update = {|
 declare type Run = {|
   +id: ID,
   +type: 'run',
-  +group: 'cmd',
   +data: {|
     fn: (data: any, scope: {[field: string]: any, ...}) => any,
   |},
@@ -752,23 +802,13 @@ declare type Run = {|
 declare type Filter = {|
   +id: ID,
   +type: 'filter',
-  +group: 'cmd',
   +data: {|
     fn: (data: any, scope: {[field: string]: any, ...}) => boolean,
-  |},
-|}
-declare type Emit = {|
-  +id: ID,
-  +type: 'emit',
-  +group: 'cmd',
-  +data: {|
-    fullName: string,
   |},
 |}
 declare type Compute = {|
   +id: ID,
   +type: 'compute',
-  +group: 'cmd',
   +data: {|
     fn: (data: any, scope: {[field: string]: any, ...}) => any,
   |},
@@ -776,21 +816,22 @@ declare type Compute = {|
 declare type Tap = {|
   +id: ID,
   +type: 'tap',
-  +group: 'cmd',
   +data: {|
     fn: (data: any, scope: {[field: string]: any, ...}) => any,
   |},
 |}
 declare type Step = /*::interface extends Unit<any>*/ {
-  +from: Array<Step>,
   +next: Array<Step>,
   +seq: Array<Cmd>,
   +scope: {[field: string]: any, ...},
+  +meta: Object,
+  +family: {|
+    +type: 'regular' | 'crosslink',
+    +links: Step[],
+    +owners: Step[],
+  |},
 }
 declare var step: {|
-  emit(data: {|
-    fullName: string,
-  |}): Emit,
   compute(data: {|
     fn: (data: any, scope: {[field: string]: any, ...}) => any,
   |}): Compute,
@@ -808,7 +849,7 @@ declare var step: {|
   |}): Run,
 |}
 declare function forward<T>(opts: {|
-  +from: Unit<T>,
+  +from: CovariantUnit<T>,
   +to: Unit<T>,
 |}): Subscription
 
@@ -821,7 +862,6 @@ declare function clearNode(
 declare function createNode(opts: {|
   +node: Array<Cmd>,
   +child?: Array<Unit<any> | Step>,
-  +from?: Array<Unit<any> | Step>,
   +scope?: {[field: string]: any, ...},
 |}): Step
 
@@ -830,18 +870,30 @@ declare function launch<T>(unit: Unit<T>, payload: T): void
 declare function fromObservable<T>(observable: mixed): Effector_Event<T>
 
 declare function createEvent<E>(eventName?: string): Effector_Event<E>
+declare function createEvent<E>(config: {
+  name?: string,
+  sid?: string,
+  ...
+}): Effector_Event<E>
 
 declare function createEffect<Params, Done, Fail>(
   effectName?: string,
   config?: {
     handler?: (params: Params) => Promise<Done> | Done,
+    sid?: string,
     ...
   },
 ): Effect<Params, Done, Fail>
+declare function createEffect<Params, Done, Fail>(config: {
+  name?: string,
+  handler?: (params: Params) => Promise<Done> | Done,
+  sid?: string,
+  ...
+}): Effect<Params, Done, Fail>
 
 declare function createStore<State>(
   defaultState: State,
-  config?: {name?: string, ...},
+  config?: {name?: string, sid?: string, ...},
 ): Store<State>
 declare function setStoreName<State>(
   store: Store<State>,
@@ -859,19 +911,6 @@ declare function createStoreObject<
     <S>(field: Store<S> | S) => S,
   >,
 >
-declare function extract<
-  State: {+[key: string]: Store<any> | any, ...},
-  NextState: {+[key: string]: Store<any> | any, ...},
->(
-  store: Store<State>,
-  extractor: (_: State) => NextState,
-): Store<
-  $ObjMap<
-    NextState,
-    //prettier-ignore
-    <S>(field: Store<S> | S) => S,
-  >,
->
 declare function createApi<
   S,
   Api: {+[name: string]: (store: S, e: any) => S, ...},
@@ -879,6 +918,19 @@ declare function createApi<
   store: Store<S>,
   api: Api,
 ): $ObjMap<Api, <E>(h: (store: S, e: E) => S) => Effector_Event<E>>
+declare function split<
+  S,
+  Obj: {
+    +[name: string]: (payload: S) => boolean,
+    ...,
+  },
+>(
+  source: Unit<S>,
+  cases: Obj,
+): $ObjMap<
+  {...Obj, __: (payload: S) => boolean, ...},
+  (h: (payload: S) => boolean) => Effector_Event<S>,
+>
 declare function restoreObject<
   State: {+[key: string]: Store<any> | any, ...},
 >(
@@ -916,13 +968,19 @@ declare function createDomain(domainName?: string): Domain
 declare function sample<A>(config: {|
   +source: Unit<A>,
   +clock: Unit<any>,
-  +target?: Unit<A>,
+  +name?: string,
 |}): Unit<A>
+declare function sample<A, U: Unit<A>>(config: {|
+  +source: Unit<A>,
+  +clock: Unit<any>,
+  +target: U,
+|}): U
 declare function sample<A, B, C>(config: {|
   +source: Unit<A>,
   +clock: Unit<B>,
   +target?: Unit<C>,
   fn(source: A, clock: B): C,
+  +name?: string,
 |}): Unit<C>
 declare function sample<A>(
   source: Store<A>,
@@ -946,26 +1004,54 @@ declare function sample<A, B, C>(
   source: Effector_Event<A> | Effect<A, any, any>,
   clock: Store<B>,
   fn: (source: A, clock: B) => C,
-): Effector_Event<A>
+): Effector_Event<C>
 declare function sample<A, B, C>(
   source: Effector_Event<A> | Store<A> | Effect<A, any, any>,
   clock: Effector_Event<B> | Effect<B, any, any>,
   fn: (source: A, clock: B) => C,
 ): Effector_Event<C>
 
-declare function invariant(
-  condition: boolean,
-  format: string,
-  ...args: mixed[]
-): void
-declare function warning(
-  condition: boolean,
-  format: string,
-  ...args: mixed[]
-): void
+declare function guard<A>(config: {|
+  +source: Unit<A>,
+  +filter: Store<boolean> | ((value: A) => boolean),
+|}): Effector_Event<A>
 
-declare function combine<R>(fn: () => R): Store<R>
+declare function guard<A>(config: {|
+  +source: Unit<A>,
+  +filter: Store<boolean> | ((value: A) => boolean),
+  +target: Unit<A>,
+|}): Unit<A>
+
+declare function guard<A>(
+  source: Unit<A>,
+  config: {|
+    +filter: Store<boolean> | ((value: A) => boolean),
+  |},
+): Effector_Event<A>
+
+declare function guard<A>(
+  source: Unit<A>,
+  config: {|
+    +filter: Store<boolean> | ((value: A) => boolean),
+    +target: Unit<A>,
+  |},
+): Unit<A>
+
+declare function combine<State: {+[key: string]: Store<any> | any, ...}>(
+  shape: State,
+): Store<$ObjMap<State, <S>(field: Store<S> | S) => S>>
+declare function combine<State: $ReadOnlyArray<Store<any> | any>>(
+  list: State,
+): Store<$TupleMap<State, <S>(field: Store<S> | S) => S>>
 declare function combine<A, R>(a: Store<A>, fn: (a: A) => R): Store<R>
+declare function combine<State: {+[key: string]: Store<any> | any, ...}, R>(
+  shape: State,
+  fn: (shape: $ObjMap<State, <S>(field: Store<S> | S) => S>) => R,
+): Store<R>
+declare function combine<State: $ReadOnlyArray<Store<any> | any>, R>(
+  list: State,
+  fn: (list: $TupleMap<State, <S>(field: Store<S> | S) => S>) => R,
+): Store<R>
 declare function combine<A, B, R>(
   a: Store<A>,
   b: Store<B>,
