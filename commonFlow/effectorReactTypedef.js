@@ -132,8 +132,8 @@ declare export function createReactState<
 }
 
 `
-
-export const effectorReactGlobal = `
+export const effectorReactGlobal = ''
+const effectorReactGlobalBroken = `
 
 declare type StoreConsumer<State> = React$ComponentType<{|
   children: (state: State) => React$Node,
