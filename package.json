@@ -5,10 +5,10 @@
   "author": "Dmitry <ribkatt@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "parcel-bundler": "^1.12.3"
+    "parcel-bundler": "^1.12.4"
   },
   "dependencies": {
-    "cross-fetch": "^3.0.0",
-    "prettier": "^1.15.3"
+    "cross-fetch": "^3.0.4",
+    "prettier": "^1.19.1"
   }
 }
