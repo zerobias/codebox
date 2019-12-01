@@ -39,7 +39,7 @@ deploy_prettier:
     aws lambda create-function
       --region eu-west-1
       --function-name codebox-$SERVICE_NAME
-      --runtime nodejs8.10
+      --runtime nodejs10.x
       --role arn:aws:iam::$LAMBDA_ROLE
       --handler lambda.default
       --code S3Bucket=$S3_BUCKET,S3Key=$SERVICE_NAME.zip
