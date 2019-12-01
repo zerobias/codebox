@@ -5,10 +5,10 @@
   "author": "Dmitry <ribkatt@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "parcel-bundler": "^1.12.3"
+    "parcel-bundler": "^1.12.4"
   },
   "dependencies": {
-    "prettier": "^1.17.0"
+    "prettier": "^1.19.1"
   },
   "scripts": {
     "now-build": "npx parcel build --bundle-node-modules --no-minify --no-source-maps -t node -d ../dist -o prettier.js service.js"
