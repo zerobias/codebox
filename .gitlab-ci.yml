@@ -1,4 +1,4 @@
-image: node:8
+image: node:12
 
 before_script:
   - apt-get update && apt-get install python-dev python-pip zip jq -y
