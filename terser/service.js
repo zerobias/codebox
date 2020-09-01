@@ -1,6 +1,6 @@
 // import fs from 'fs'
 // import fetch from 'cross-fetch'
-import Terser from 'terser'
+import {minify} from 'terser'
 
 import taskService from '../lib/taskService'
 import options from './defaultTerserConfig'
@@ -32,19 +32,19 @@ import options from './defaultTerserConfig'
 export default taskService({
   serviceName: 'terser',
   async task(ctx, bodyRaw) {
-    const body = Object.assign({}, {
-      code: '"no code!"',
-      config: {},
-    }, bodyRaw)
-    const code = body.code
-    const config = Object.assign(
+    const body = Object.assign(
       {},
-      options,
-      body.config,
+      {
+        code: '"no code!"',
+        config: {},
+      },
+      bodyRaw,
     )
-    const result = Terser.minify(code, config).code
+    const code = body.code
+    const config = Object.assign({}, options, body.config)
+    const result = await minify(code, config)
     return {
-      code: result,
+      code: result.code,
     }
   },
 })
