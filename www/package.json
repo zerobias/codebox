@@ -7,7 +7,7 @@
   "dependencies": {
     "@skidding/react-codemirror": "^1.0.2",
     "codemirror": "^5.42.2",
-    "cross-fetch": "^3.0.0",
+    "cross-fetch": "^3.1.5",
     "next": "^7.0.2",
     "next-images": "^1.0.4",
     "prop-types": "^15.6.2",
