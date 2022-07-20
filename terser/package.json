@@ -10,7 +10,7 @@
     "parcel-bundler": "^1.12.4"
   },
   "dependencies": {
-    "terser": "^5.2.1"
+    "terser": "^5.14.2"
   },
   "scripts": {
     "now-build": "npx parcel build --bundle-node-modules --no-minify --no-source-maps -t node -d ../dist -o terser.js service.js"
